@@ -5,6 +5,7 @@ import { Note, NoteType, Tool } from "@/types";
 import { Notepad } from "./Notepad";
 import { Timeline } from "./Timeline";
 import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { 
   MessageSquare, 
   HeartPulse, 
@@ -13,7 +14,8 @@ import {
   Brain, 
   Target, 
   Zap,
-  History
+  History,
+  Info
 } from "lucide-react";
 
 type SessionTabsProps = {
@@ -22,6 +24,7 @@ type SessionTabsProps = {
   onDeleteNote: (id: string) => void;
   onToggleDrawing: () => void;
   onAssignExercise: (exerciseType: string) => void;
+  plannedExercises: string[];
 };
 
 export function SessionTabs({ 
@@ -29,7 +32,8 @@ export function SessionTabs({
   onAddNote, 
   onDeleteNote, 
   onToggleDrawing,
-  onAssignExercise
+  onAssignExercise,
+  plannedExercises
 }: SessionTabsProps) {
   const [activeTab, setActiveTab] = useState("notatki");
   const [touchStartX, setTouchStartX] = useState<number | null>(null);
@@ -128,6 +132,30 @@ export function SessionTabs({
     }
   }, [touchStartX, touchEndX, activeTab]);
 
+  // Split exercises into planned and other
+  const plannedExercisesList = exercises.filter(ex => plannedExercises.includes(ex.id));
+  const otherExercises = exercises.filter(ex => !plannedExercises.includes(ex.id));
+
+  const handleChangeNoteType = (noteId: string, typeId: string) => {
+    // This is a placeholder - in a real app we would update the note type
+    console.log(`Changing note ${noteId} to type ${typeId}`);
+  };
+
+  const scrollToNote = (noteId: string) => {
+    setActiveTab("szczegoly");
+    setTimeout(() => {
+      const noteElement = document.getElementById(`note-${noteId}`);
+      if (noteElement) {
+        noteElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        // Add a highlight effect
+        noteElement.classList.add('bg-yellow-50');
+        setTimeout(() => {
+          noteElement.classList.remove('bg-yellow-50');
+        }, 2000);
+      }
+    }, 100);
+  };
+
   return (
     <div ref={tabsRef} className="w-full touch-pan-y">
       <Tabs 
@@ -141,9 +169,14 @@ export function SessionTabs({
             <MessageSquare size={16} />
             <span>Notatki</span>
           </TabsTrigger>
-          <TabsTrigger value="cwiczenia" className="flex items-center gap-2">
+          <TabsTrigger value="cwiczenia" className="flex items-center gap-2 relative">
             <Brain size={16} />
             <span>Ćwiczenia</span>
+            {plannedExercisesList.length > 0 && (
+              <Badge className="absolute -right-1 -top-1 bg-amber-500 h-4 w-4 p-0 flex items-center justify-center">
+                {plannedExercisesList.length}
+              </Badge>
+            )}
           </TabsTrigger>
           <TabsTrigger value="szczegoly" className="flex items-center gap-2">
             <History size={16} />
@@ -163,9 +196,43 @@ export function SessionTabs({
         </TabsContent>
         
         <TabsContent value="cwiczenia" className="space-y-4">
-          <h2 className="text-lg font-medium mb-4">Wybierz ćwiczenie</h2>
+          {plannedExercisesList.length > 0 && (
+            <>
+              <div className="flex items-center gap-2 mb-2">
+                <h2 className="text-lg font-medium">Zaplanowane ćwiczenia</h2>
+                <Badge variant="secondary">Zaplanowane przed sesją</Badge>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                {plannedExercisesList.map((exercise) => (
+                  <Card 
+                    key={exercise.id}
+                    className="p-4 cursor-pointer hover:shadow-md transition-shadow border-amber-200"
+                    onClick={() => {
+                      onAssignExercise(exercise.id);
+                      setActiveTab("notatki");
+                    }}
+                  >
+                    <div className="flex items-start gap-3">
+                      <div 
+                        className="p-2 rounded-md"
+                        style={{ backgroundColor: `${exercise.color}20` }}
+                      >
+                        {exercise.icon}
+                      </div>
+                      <div>
+                        <h3 className="font-medium">{exercise.name}</h3>
+                        <p className="text-sm text-gray-500">{exercise.description}</p>
+                      </div>
+                    </div>
+                  </Card>
+                ))}
+              </div>
+            </>
+          )}
+          
+          <h2 className="text-lg font-medium mb-4">Wszystkie ćwiczenia</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {exercises.map((exercise) => (
+            {otherExercises.map((exercise) => (
               <Card 
                 key={exercise.id}
                 className="p-4 cursor-pointer hover:shadow-md transition-shadow"
@@ -218,7 +285,7 @@ export function SessionTabs({
                   </div>
                   <div className="bg-gray-50 p-2 rounded">
                     <span className="text-xs text-gray-500">Ćwiczenia</span>
-                    <p className="font-medium">3</p>
+                    <p className="font-medium">{plannedExercisesList.length}</p>
                   </div>
                 </div>
               </div>
@@ -226,8 +293,18 @@ export function SessionTabs({
           </Card>
           
           <div className="mt-6">
-            <h3 className="text-lg font-medium mb-2">Pełna oś czasu</h3>
-            <Timeline notes={notes} onDeleteNote={onDeleteNote} />
+            <div className="flex items-center gap-2 mb-4">
+              <h3 className="text-lg font-medium">Pełna oś czasu</h3>
+              <Badge variant="outline" className="flex items-center gap-1">
+                <Info size={12} />
+                <span>Rozszerzona</span>
+              </Badge>
+            </div>
+            <Timeline 
+              notes={notes} 
+              onDeleteNote={onDeleteNote} 
+              onChangeNoteType={handleChangeNoteType}
+            />
           </div>
         </TabsContent>
       </Tabs>

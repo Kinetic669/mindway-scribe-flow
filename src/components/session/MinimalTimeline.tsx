@@ -2,36 +2,55 @@
 import { useState } from "react";
 import { Note } from "@/types";
 import { Button } from "@/components/ui/button";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, Clock, Calendar } from "lucide-react";
 import { toast } from "sonner";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 type MinimalTimelineProps = {
   notes: Note[];
   visible: boolean;
   onToggleVisibility: () => void;
+  onNoteClick: (noteId: string) => void;
 };
 
-export const MinimalTimeline = ({ notes, visible, onToggleVisibility }: MinimalTimelineProps) => {
+export const MinimalTimeline = ({ notes, visible, onToggleVisibility, onNoteClick }: MinimalTimelineProps) => {
+  const [showMinutes, setShowMinutes] = useState(true);
+
   if (!visible) {
     return (
       <Button 
         variant="outline" 
         size="sm" 
-        className="fixed top-20 right-4 z-10"
         onClick={onToggleVisibility}
       >
         <Eye size={16} className="mr-2" />
-        <span>Pokaż oś czasu</span>
+        <span>Pokaż mini oś czasu</span>
       </Button>
     );
   }
+  
+  // Calculate minutes since session start
+  const sessionStartTime = notes.length > 0 ? 
+    Math.min(...notes.map(note => note.timestamp.getTime())) : 
+    new Date().getTime();
+  
+  const getMinutesSinceStart = (timestamp: Date) => {
+    return Math.floor((timestamp.getTime() - sessionStartTime) / 60000);
+  };
 
-  // Group notes by hour
+  // Group notes by hour or minutes
   const groupedNotes: Record<string, Note[]> = {};
   
   notes.forEach(note => {
-    const hour = note.timestamp.getHours();
-    const key = `${hour}:00`;
+    let key;
+    if (showMinutes) {
+      const minutes = getMinutesSinceStart(note.timestamp);
+      key = `${minutes} min`;
+    } else {
+      const hour = note.timestamp.getHours();
+      const minute = note.timestamp.getMinutes();
+      key = `${hour}:${minute < 10 ? '0' + minute : minute}`;
+    }
     
     if (!groupedNotes[key]) {
       groupedNotes[key] = [];
@@ -42,68 +61,80 @@ export const MinimalTimeline = ({ notes, visible, onToggleVisibility }: MinimalT
 
   // Sort times
   const sortedTimes = Object.keys(groupedNotes).sort((a, b) => {
-    const hourA = parseInt(a.split(':')[0]);
-    const hourB = parseInt(b.split(':')[0]);
-    return hourA - hourB;
+    if (showMinutes) {
+      const minutesA = parseInt(a.split(' ')[0]);
+      const minutesB = parseInt(b.split(' ')[0]);
+      return minutesA - minutesB;
+    } else {
+      const [hourA, minuteA] = a.split(':').map(Number);
+      const [hourB, minuteB] = b.split(':').map(Number);
+      if (hourA !== hourB) return hourA - hourB;
+      return minuteA - minuteB;
+    }
   });
 
-  const handleNoteClick = (noteType: string) => {
-    toast.info(`Notatka typu: ${noteType}`);
+  const handleFormatToggle = () => {
+    setShowMinutes(!showMinutes);
   };
 
   return (
-    <div className="fixed top-20 right-4 bg-white shadow-md rounded-md p-3 z-10 max-w-xs">
+    <div className="bg-white shadow-sm rounded-md p-2 mb-4 w-full">
       <div className="flex justify-between items-center mb-2">
-        <h3 className="text-sm font-medium">Przebieg sesji</h3>
-        <Button 
-          variant="ghost" 
-          size="sm" 
-          onClick={onToggleVisibility}
-          className="h-6 w-6 p-0"
-        >
-          <EyeOff size={16} />
-        </Button>
+        <h3 className="text-sm font-medium">Mini oś czasu</h3>
+        <div className="flex items-center gap-2">
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            onClick={handleFormatToggle}
+            className="h-6 px-2 text-xs"
+          >
+            {showMinutes ? <Clock size={14} className="mr-1" /> : <Calendar size={14} className="mr-1" />}
+            {showMinutes ? "Pokaż godziny" : "Pokaż minuty sesji"}
+          </Button>
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            onClick={onToggleVisibility}
+            className="h-6 w-6 p-0"
+          >
+            <EyeOff size={14} />
+          </Button>
+        </div>
       </div>
       
       <div className="overflow-x-auto">
-        <div className="flex flex-col space-y-1">
+        <div className="flex items-center space-x-1 overflow-x-auto pb-1 no-scrollbar">
           {sortedTimes.map(time => (
-            <div key={time} className="flex items-center">
-              <span className="text-xs font-medium text-gray-500 w-10">{time}</span>
-              <div className="flex items-center space-x-1 overflow-x-auto no-scrollbar">
+            <div key={time} className="flex flex-col items-center">
+              <span className="text-xs font-medium text-gray-500 mb-1">{time}</span>
+              <div className="flex flex-col items-center space-y-1">
                 {groupedNotes[time].map(note => (
-                  <div 
-                    key={note.id}
-                    style={{ 
-                      backgroundColor: note.type.color,
-                      cursor: 'pointer'
-                    }}
-                    className="w-4 h-4 rounded-full flex-shrink-0 hover:scale-125 transition-transform"
-                    onClick={() => handleNoteClick(note.type.name)}
-                    title={note.type.name}
-                  />
+                  <TooltipProvider key={note.id}>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <div 
+                          style={{ 
+                            backgroundColor: note.type.color,
+                            cursor: 'pointer'
+                          }}
+                          className="w-4 h-4 rounded-full flex-shrink-0 hover:scale-125 transition-transform"
+                          onClick={() => onNoteClick(note.id)}
+                        />
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>
+                          {showMinutes ? `Minuta sesji: ${getMinutesSinceStart(note.timestamp)}` : 
+                            `Czas: ${note.timestamp.getHours()}:${note.timestamp.getMinutes() < 10 ? '0' : ''}${note.timestamp.getMinutes()}`}
+                        </p>
+                        <p>Typ: {note.type.name}</p>
+                        {note.content.length > 30 ? `${note.content.substring(0, 30)}...` : note.content}
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
                 ))}
               </div>
             </div>
           ))}
-        </div>
-      </div>
-      
-      <div className="mt-2 pt-2 border-t">
-        <div className="text-xs text-gray-500">Legenda:</div>
-        <div className="flex flex-wrap gap-2 mt-1">
-          {Array.from(new Set(notes.map(note => note.type.name))).map((typeName, index) => {
-            const typeColor = notes.find(note => note.type.name === typeName)?.type.color || '#ccc';
-            return (
-              <div key={index} className="flex items-center gap-1">
-                <div 
-                  className="w-3 h-3 rounded-full" 
-                  style={{ backgroundColor: typeColor }}
-                />
-                <span className="text-xs">{typeName}</span>
-              </div>
-            );
-          })}
         </div>
       </div>
     </div>

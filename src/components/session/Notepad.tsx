@@ -161,6 +161,10 @@ export const Notepad = ({ onAddNote, onToggleDrawing }: NotepadProps) => {
           variant="outline" 
           size="sm"
           onClick={onToggleDrawing}
+          style={{ 
+            borderColor: `${selectedType.color}40`,
+            color: selectedType.color
+          }}
         >
           <Pencil size={14} className="mr-1" /> Rysuj
         </Button>

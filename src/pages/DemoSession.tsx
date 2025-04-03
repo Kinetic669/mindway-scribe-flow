@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
 import { Note, NoteType, Tool } from "@/types";
@@ -30,6 +30,10 @@ const DemoSession = () => {
   const [plannedExercises, setPlannedExercises] = useState<string[]>([]);
   const [sessionGoals, setSessionGoals] = useState<string[]>([]);
   const [sessionNotes, setSessionNotes] = useState<string>("");
+  const [selectedDrawingType, setSelectedDrawingType] = useState<NoteType>(
+    noteTypes.find(t => t.name === "Spostrzeżenie terapeuty") || noteTypes[0]
+  );
+  const timelineRef = useRef<HTMLDivElement>(null);
 
   // Get session prep data from sessionStorage
   useEffect(() => {
@@ -52,6 +56,22 @@ const DemoSession = () => {
 
     return () => clearInterval(interval);
   }, [sessionStartTime]);
+
+  // Add a note from session planning if exists
+  useEffect(() => {
+    if (sessionNotes && sessionNotes.trim() !== "") {
+      // Create a note from session planning notes
+      const planningNote: Note = {
+        id: uuidv4(),
+        content: `Notatki z planowania sesji: ${sessionNotes}`,
+        type: noteTypes.find(t => t.name === "Spostrzeżenie terapeuty") || noteTypes[0],
+        timestamp: new Date(sessionStartTime.getTime() - 3600000), // 1 hour before session
+        createdAt: new Date(sessionStartTime.getTime() - 3600000),
+        updatedAt: new Date(sessionStartTime.getTime() - 3600000),
+      };
+      setNotes(prev => [planningNote, ...prev]);
+    }
+  }, []);
 
   const addNote = (content: string, type: NoteType) => {
     const newNote: Note = {
@@ -81,7 +101,7 @@ const DemoSession = () => {
     const drawingNote: Note = {
       id: uuidv4(),
       content: imageData,
-      type: noteTypes.find(t => t.name === "Spostrzeżenie terapeuty") || noteTypes[0],
+      type: selectedDrawingType,
       timestamp: new Date(),
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -89,7 +109,7 @@ const DemoSession = () => {
 
     setNotes(prev => [drawingNote, ...prev]);
     setIsDrawingMode(false);
-    toast.success("Rysunek dodany do osi czasu");
+    toast.success(`Rysunek dodany jako ${selectedDrawingType.name}`);
   };
 
   const handleEmotionWheelSave = (data: { emotion: string; intensity: number; notes: string }) => {
@@ -156,6 +176,23 @@ const DemoSession = () => {
     return `${minutes} minut`;
   };
 
+  const handleNoteClick = (noteId: string) => {
+    // Find the note in the list
+    const note = notes.find(n => n.id === noteId);
+    if (!note) return;
+    
+    // Scroll to the note in the timeline
+    const timelineElement = document.getElementById(`note-${noteId}`);
+    if (timelineElement) {
+      timelineElement.scrollIntoView({ behavior: 'smooth' });
+      // Add highlight effect
+      timelineElement.classList.add('bg-yellow-50');
+      setTimeout(() => {
+        timelineElement.classList.remove('bg-yellow-50');
+      }, 2000);
+    }
+  };
+
   return (
     <div className="min-h-screen flex flex-col pb-6">
       <NavBar />
@@ -191,67 +228,48 @@ const DemoSession = () => {
           </div>
         </Card>
         
-        {/* Session goals and notes */}
-        {(sessionGoals.length > 0 || sessionNotes) && (
+        {/* Session goals */}
+        {sessionGoals.length > 0 && (
           <Card className="mb-6 p-4">
-            {sessionGoals.length > 0 && (
-              <div className="mb-3">
-                <h2 className="text-sm font-medium text-gray-500">Cele sesji:</h2>
-                <ul className="list-disc list-inside mt-1">
-                  {sessionGoals.map((goal, index) => (
-                    <li key={index} className="text-sm">{goal}</li>
-                  ))}
-                </ul>
-              </div>
-            )}
-            
-            {sessionNotes && (
-              <div>
-                <h2 className="text-sm font-medium text-gray-500">Notatki do sesji:</h2>
-                <p className="text-sm mt-1">{sessionNotes}</p>
-              </div>
-            )}
-          </Card>
-        )}
-        
-        {/* Planned exercises */}
-        {plannedExercises.length > 0 && (
-          <Card className="mb-6 p-4">
-            <h2 className="text-sm font-medium text-gray-500 mb-2">Zaplanowane ćwiczenia:</h2>
-            <div className="flex flex-wrap gap-2">
-              {plannedExercises.map((exercise, index) => (
-                <Button 
-                  key={index} 
-                  variant="outline" 
-                  size="sm"
-                  onClick={() => handleAssignExercise(exercise)}
-                >
-                  {exercise === "emotion-wheel" && "Koło emocji"}
-                  {exercise === "breathing" && "Ćwiczenie oddechowe"}
-                  {exercise === "reflection" && "Refleksja"}
-                  {exercise === "cognitive-restructuring" && "Restrukturyzacja poznawcza"}
-                  {exercise === "goal-setting" && "Cele terapii"}
-                  {exercise === "grounding" && "Uziemienie 5-4-3-2-1"}
-                </Button>
-              ))}
+            <div className="mb-3">
+              <h2 className="text-sm font-medium text-gray-500">Cele sesji:</h2>
+              <ul className="list-disc list-inside mt-1">
+                {sessionGoals.map((goal, index) => (
+                  <li key={index} className="text-sm">{goal}</li>
+                ))}
+              </ul>
             </div>
           </Card>
         )}
         
-        {/* Minimal Timeline */}
-        <MinimalTimeline 
-          notes={notes.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime())} 
-          visible={showMinimalTimeline}
-          onToggleVisibility={() => setShowMinimalTimeline(!showMinimalTimeline)}
-        />
+        {/* Mini Timeline */}
+        {showMinimalTimeline && (
+          <MinimalTimeline 
+            notes={notes.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime())} 
+            visible={showMinimalTimeline}
+            onToggleVisibility={() => setShowMinimalTimeline(!showMinimalTimeline)}
+            onNoteClick={handleNoteClick}
+          />
+        )}
         
         {/* Tabs Interface */}
         <SessionTabs 
           notes={notes.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime())}
           onAddNote={addNote}
           onDeleteNote={deleteNote}
-          onToggleDrawing={() => setIsDrawingMode(true)}
+          onToggleDrawing={() => {
+            // Use the currently selected note type when toggling drawing mode
+            const currentNoteTypeInput = document.querySelector('[data-note-type-selector]') as HTMLElement;
+            if (currentNoteTypeInput) {
+              const selectedType = noteTypes.find(t => t.id === currentNoteTypeInput.dataset.noteTypeId);
+              if (selectedType) {
+                setSelectedDrawingType(selectedType);
+              }
+            }
+            setIsDrawingMode(true);
+          }}
           onAssignExercise={handleAssignExercise}
+          plannedExercises={plannedExercises}
         />
       </main>
       
