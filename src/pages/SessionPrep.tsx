@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -7,9 +7,38 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { NavBar } from "@/components/NavBar";
 import { mockClients, mockNotes } from "@/data/mockData";
-import { ChevronRight, Clock, Target, Calendar, User, FileText, List, Activity } from "lucide-react";
+import { 
+  ChevronRight, 
+  Clock, 
+  Target, 
+  Calendar, 
+  User, 
+  FileText, 
+  List, 
+  Activity,
+  X,
+  Check,
+  Brain,
+  HeartPulse,
+  Wind,
+  Target as TargetIcon,
+  FileText as FileTextIcon,
+  Zap
+} from "lucide-react";
 import { ChartContainer } from "@/components/ui/chart";
-import { CartesianGrid, XAxis, YAxis, Tooltip, ResponsiveContainer, LineChart, Line, BarChart, Bar } from "recharts";
+import { 
+  CartesianGrid, 
+  XAxis, 
+  YAxis, 
+  Tooltip, 
+  ResponsiveContainer, 
+  LineChart, 
+  Line, 
+  BarChart, 
+  Bar 
+} from "recharts";
+import { Checkbox } from "@/components/ui/checkbox";
+import { toast } from "sonner";
 
 const SessionPrep = () => {
   const navigate = useNavigate();
@@ -17,9 +46,56 @@ const SessionPrep = () => {
   const [newGoal, setNewGoal] = useState("");
   const [sessionDuration, setSessionDuration] = useState(50);
   const [sessionNotes, setSessionNotes] = useState("");
+  const [selectedExercises, setSelectedExercises] = useState<string[]>([]);
   
   // Get demo client (first client in the mock data)
   const client = mockClients[0];
+  
+  // Available exercises
+  const exercises = [
+    {
+      id: "emotion-wheel",
+      name: "Koło emocji",
+      description: "Pomaga klientowi zidentyfikować i nazwać swoje emocje",
+      color: "#F43F5E",
+      icon: <HeartPulse size={24} />,
+    },
+    {
+      id: "breathing",
+      name: "Ćwiczenie oddechowe",
+      description: "Technika relaksacyjna oparta na kontrolowanym oddychaniu",
+      color: "#10B981",
+      icon: <Wind size={24} />,
+    },
+    {
+      id: "reflection",
+      name: "Refleksja",
+      description: "Strukturyzowany formularz do refleksji nad sytuacją",
+      color: "#6366F1",
+      icon: <FileTextIcon size={24} />,
+    },
+    {
+      id: "cognitive-restructuring",
+      name: "Restrukturyzacja poznawcza",
+      description: "Identyfikacja i zmiana negatywnych schematów myślenia",
+      color: "#8B5CF6",
+      icon: <Brain size={24} />,
+    },
+    {
+      id: "goal-setting",
+      name: "Cele terapii",
+      description: "Ustalanie celów SMART na kolejne sesje",
+      color: "#F59E0B",
+      icon: <TargetIcon size={24} />,
+    },
+    {
+      id: "grounding",
+      name: "Uziemienie 5-4-3-2-1",
+      description: "Technika uważności oparta na zmysłach",
+      color: "#3B82F6",
+      icon: <Zap size={24} />,
+    },
+  ];
   
   // Mock attendance data for the chart
   const attendanceData = [
@@ -47,9 +123,29 @@ const SessionPrep = () => {
     setSessionGoals(goals => goals.filter((_, i) => i !== index));
   };
   
+  const handleExerciseToggle = (exerciseId: string) => {
+    setSelectedExercises(prev => {
+      if (prev.includes(exerciseId)) {
+        return prev.filter(id => id !== exerciseId);
+      } else {
+        return [...prev, exerciseId];
+      }
+    });
+  };
+  
   const startSession = () => {
-    // In a real app, you would save session prep data here
-    // For the demo, just navigate to the session
+    // Save session prep data to sessionStorage
+    const sessionPrepData = {
+      sessionGoals,
+      sessionDuration,
+      sessionNotes,
+      plannedExercises: selectedExercises,
+    };
+    
+    sessionStorage.setItem('sessionPrepData', JSON.stringify(sessionPrepData));
+    toast.success("Dane sesji zapisane pomyślnie");
+    
+    // Navigate to the session
     navigate("/demo/session");
   };
   
@@ -247,29 +343,79 @@ const SessionPrep = () => {
           <Card className="p-6">
             <h2 className="text-lg font-medium mb-4 flex items-center gap-2">
               <Activity size={18} />
-              <span>Zaplanowane ćwiczenia</span>
+              <span>Wybierz ćwiczenia na sesję</span>
             </h2>
             
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <Card className="overflow-hidden border-2 border-blue-100">
-                <div className="bg-blue-50 p-3">
-                  <h3 className="font-medium">Koło emocji</h3>
-                  <p className="text-sm text-gray-600">Identyfikacja i wyrażanie emocji</p>
-                </div>
-                <div className="p-3 flex justify-end">
-                  <Button variant="outline" size="sm">Podgląd</Button>
-                </div>
-              </Card>
-              
-              <Card className="overflow-hidden border-2 border-green-100">
-                <div className="bg-green-50 p-3">
-                  <h3 className="font-medium">Ćwiczenie oddechowe</h3>
-                  <p className="text-sm text-gray-600">Technika oddechu 4-7-8 na lęk</p>
-                </div>
-                <div className="p-3 flex justify-end">
-                  <Button variant="outline" size="sm">Podgląd</Button>
-                </div>
-              </Card>
+              {exercises.map(exercise => (
+                <Card 
+                  key={exercise.id} 
+                  className={`overflow-hidden border-2 ${
+                    selectedExercises.includes(exercise.id) 
+                      ? `border-${exercise.color.slice(1)}` 
+                      : 'border-gray-100'
+                  }`}
+                >
+                  <div 
+                    className="p-4 flex justify-between items-start"
+                    style={{ 
+                      backgroundColor: selectedExercises.includes(exercise.id) 
+                        ? `${exercise.color}20` 
+                        : 'transparent' 
+                    }}
+                  >
+                    <div className="flex items-start gap-3">
+                      <div 
+                        className="p-2 rounded-md"
+                        style={{ backgroundColor: `${exercise.color}20` }}
+                      >
+                        {exercise.icon}
+                      </div>
+                      <div>
+                        <h3 className="font-medium">{exercise.name}</h3>
+                        <p className="text-sm text-gray-600">{exercise.description}</p>
+                      </div>
+                    </div>
+                    <Checkbox 
+                      checked={selectedExercises.includes(exercise.id)}
+                      onCheckedChange={() => handleExerciseToggle(exercise.id)}
+                      className="mt-1"
+                    />
+                  </div>
+                </Card>
+              ))}
+            </div>
+            
+            <div className="mt-4 bg-gray-50 p-3 rounded-md">
+              <h3 className="text-sm font-medium mb-2">Wybrane ćwiczenia ({selectedExercises.length})</h3>
+              <div className="flex flex-wrap gap-2">
+                {selectedExercises.length === 0 ? (
+                  <p className="text-sm text-gray-500">Nie wybrano żadnych ćwiczeń</p>
+                ) : (
+                  exercises
+                    .filter(ex => selectedExercises.includes(ex.id))
+                    .map(ex => (
+                      <div 
+                        key={ex.id} 
+                        className="flex items-center px-2 py-1 bg-white rounded border gap-2"
+                      >
+                        <span 
+                          className="w-2 h-2 rounded-full"
+                          style={{ backgroundColor: ex.color }}  
+                        />
+                        <span className="text-sm">{ex.name}</span>
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          className="h-5 w-5 p-0 ml-1" 
+                          onClick={() => handleExerciseToggle(ex.id)}
+                        >
+                          <X size={12} />
+                        </Button>
+                      </div>
+                    ))
+                )}
+              </div>
             </div>
           </Card>
         </div>

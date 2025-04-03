@@ -8,6 +8,7 @@ import { DrawingCanvas } from "@/components/session/DrawingCanvas";
 import { NavBar } from "@/components/NavBar";
 import { Button } from "@/components/ui/button";
 import { SessionTabs } from "@/components/session/SessionTabs";
+import { MinimalTimeline } from "@/components/session/MinimalTimeline";
 import { 
   ChevronLeft, 
   Clock, 
@@ -25,6 +26,21 @@ const DemoSession = () => {
   const [sessionStartTime] = useState(new Date());
   const [sessionDuration, setSessionDuration] = useState(0);
   const [activeExercise, setActiveExercise] = useState<string | null>(null);
+  const [showMinimalTimeline, setShowMinimalTimeline] = useState(true);
+  const [plannedExercises, setPlannedExercises] = useState<string[]>([]);
+  const [sessionGoals, setSessionGoals] = useState<string[]>([]);
+  const [sessionNotes, setSessionNotes] = useState<string>("");
+
+  // Get session prep data from sessionStorage
+  useEffect(() => {
+    const sessionPrepData = sessionStorage.getItem('sessionPrepData');
+    if (sessionPrepData) {
+      const data = JSON.parse(sessionPrepData);
+      if (data.plannedExercises) setPlannedExercises(data.plannedExercises);
+      if (data.sessionGoals) setSessionGoals(data.sessionGoals);
+      if (data.sessionNotes) setSessionNotes(data.sessionNotes);
+    }
+  }, []);
 
   useEffect(() => {
     // Update session duration every minute
@@ -162,11 +178,72 @@ const DemoSession = () => {
             </div>
           </div>
           <div className="flex items-center gap-2">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={() => setShowMinimalTimeline(!showMinimalTimeline)}
+            >
+              {showMinimalTimeline ? "Ukryj oś czasu" : "Pokaż oś czasu"}
+            </Button>
             <Button size="icon" variant="ghost">
               <MoreHorizontal size={18} />
             </Button>
           </div>
         </Card>
+        
+        {/* Session goals and notes */}
+        {(sessionGoals.length > 0 || sessionNotes) && (
+          <Card className="mb-6 p-4">
+            {sessionGoals.length > 0 && (
+              <div className="mb-3">
+                <h2 className="text-sm font-medium text-gray-500">Cele sesji:</h2>
+                <ul className="list-disc list-inside mt-1">
+                  {sessionGoals.map((goal, index) => (
+                    <li key={index} className="text-sm">{goal}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+            
+            {sessionNotes && (
+              <div>
+                <h2 className="text-sm font-medium text-gray-500">Notatki do sesji:</h2>
+                <p className="text-sm mt-1">{sessionNotes}</p>
+              </div>
+            )}
+          </Card>
+        )}
+        
+        {/* Planned exercises */}
+        {plannedExercises.length > 0 && (
+          <Card className="mb-6 p-4">
+            <h2 className="text-sm font-medium text-gray-500 mb-2">Zaplanowane ćwiczenia:</h2>
+            <div className="flex flex-wrap gap-2">
+              {plannedExercises.map((exercise, index) => (
+                <Button 
+                  key={index} 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => handleAssignExercise(exercise)}
+                >
+                  {exercise === "emotion-wheel" && "Koło emocji"}
+                  {exercise === "breathing" && "Ćwiczenie oddechowe"}
+                  {exercise === "reflection" && "Refleksja"}
+                  {exercise === "cognitive-restructuring" && "Restrukturyzacja poznawcza"}
+                  {exercise === "goal-setting" && "Cele terapii"}
+                  {exercise === "grounding" && "Uziemienie 5-4-3-2-1"}
+                </Button>
+              ))}
+            </div>
+          </Card>
+        )}
+        
+        {/* Minimal Timeline */}
+        <MinimalTimeline 
+          notes={notes.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime())} 
+          visible={showMinimalTimeline}
+          onToggleVisibility={() => setShowMinimalTimeline(!showMinimalTimeline)}
+        />
         
         {/* Tabs Interface */}
         <SessionTabs 

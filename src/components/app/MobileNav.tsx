@@ -15,26 +15,26 @@ export const MobileNav = () => {
     { 
       name: "Klienci", 
       icon: <Users size={20} />, 
-      path: "/clients",
-      active: location.pathname.includes("/clients")
+      path: "/klienci",
+      active: location.pathname.includes("/klienci")
     },
     { 
       name: "Sesje", 
       icon: <FileText size={20} />, 
-      path: "/sessions",
-      active: location.pathname.includes("/sessions")
+      path: "/sesje",
+      active: location.pathname.includes("/sesje")
     },
     { 
       name: "Narzędzia", 
       icon: <Briefcase size={20} />, 
-      path: "/tools",
-      active: location.pathname.includes("/tools")
+      path: "/narzedzia",
+      active: location.pathname.includes("/narzedzia")
     },
     { 
       name: "Ustawienia", 
       icon: <Settings size={20} />, 
-      path: "/settings",
-      active: location.pathname.includes("/settings")
+      path: "/ustawienia",
+      active: location.pathname.includes("/ustawienia")
     },
   ];
 
