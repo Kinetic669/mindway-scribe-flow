@@ -131,6 +131,15 @@ const DemoSession = () => {
     toast.success("Refleksje dodane do osi czasu");
   };
 
+  // Format session duration in Polish
+  const formatSessionDuration = (minutes: number) => {
+    if (minutes === 0) return "Rozpoczęta przed chwilą";
+    
+    if (minutes === 1) return "1 minuta";
+    if (minutes < 5) return `${minutes} minuty`;
+    return `${minutes} minut`;
+  };
+
   return (
     <div className="min-h-screen flex flex-col pb-6">
       <NavBar />
@@ -148,12 +157,7 @@ const DemoSession = () => {
               <h1 className="text-xl font-semibold">Sesja demonstracyjna</h1>
               <div className="flex items-center gap-2 text-sm text-gray-500">
                 <Clock size={14} />
-                <span>
-                  {sessionDuration > 0 
-                    ? `${sessionDuration} ${sessionDuration === 1 ? 'minuta' : 
-                      sessionDuration < 5 ? 'minuty' : 'minut'}`
-                    : 'Rozpoczęta przed chwilą'}
-                </span>
+                <span>{formatSessionDuration(sessionDuration)}</span>
               </div>
             </div>
           </div>

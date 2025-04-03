@@ -23,6 +23,10 @@ const App = () => (
           <Route path="/demo/session/prep" element={<SessionPrep />} />
           <Route path="/demo/session" element={<DemoSession />} />
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/sesje" element={<Dashboard />} />
+          <Route path="/klienci" element={<Dashboard />} />
+          <Route path="/narzedzia" element={<Dashboard />} />
+          <Route path="/ustawienia" element={<Dashboard />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

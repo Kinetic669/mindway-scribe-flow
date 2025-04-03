@@ -13,7 +13,7 @@ import { CartesianGrid, XAxis, YAxis, Tooltip, ResponsiveContainer, LineChart, L
 
 const SessionPrep = () => {
   const navigate = useNavigate();
-  const [sessionGoals, setSessionGoals] = useState<string[]>(["Explore anxiety triggers", "Practice mindfulness technique"]);
+  const [sessionGoals, setSessionGoals] = useState<string[]>(["Eksploracja czynników wywołujących lęk", "Ćwiczenie techniki uważności"]);
   const [newGoal, setNewGoal] = useState("");
   const [sessionDuration, setSessionDuration] = useState(50);
   const [sessionNotes, setSessionNotes] = useState("");
@@ -23,12 +23,12 @@ const SessionPrep = () => {
   
   // Mock attendance data for the chart
   const attendanceData = [
-    { month: "Aug", count: 4, sessions: 4 },
-    { month: "Sep", count: 3, sessions: 4 },
-    { month: "Oct", count: 4, sessions: 4 },
-    { month: "Nov", count: 3, sessions: 4 },
-    { month: "Dec", count: 4, sessions: 4 },
-    { month: "Jan", count: 4, sessions: 4 },
+    { month: "Sie", count: 4, sessions: 4 },
+    { month: "Wrz", count: 3, sessions: 4 },
+    { month: "Paź", count: 4, sessions: 4 },
+    { month: "Lis", count: 3, sessions: 4 },
+    { month: "Gru", count: 4, sessions: 4 },
+    { month: "Sty", count: 4, sessions: 4 },
   ];
   
   // Generate weekly attendance data for the small chart
@@ -66,7 +66,7 @@ const SessionPrep = () => {
               </div>
               <div>
                 <h1 className="text-xl font-semibold">{client.name}</h1>
-                <p className="text-sm text-gray-500">Session Preparation</p>
+                <p className="text-sm text-gray-500">Przygotowanie sesji</p>
               </div>
             </div>
             
@@ -75,20 +75,20 @@ const SessionPrep = () => {
               <div className="space-y-4">
                 <h2 className="text-lg font-medium flex items-center gap-2">
                   <Calendar size={18} />
-                  <span>Attendance Overview</span>
+                  <span>Przegląd obecności</span>
                 </h2>
                 
                 <Card className="p-4 h-44">
-                  <div className="text-xs text-gray-500 mb-1">Weekly Sessions</div>
+                  <div className="text-xs text-gray-500 mb-1">Cotygodniowe sesje</div>
                   <div className="h-full w-full">
                     <ChartContainer
                       config={{
                         attended: {
-                          label: "Attended",
+                          label: "Obecny",
                           color: "#4c6fff"
                         },
                         missed: {
-                          label: "Missed",
+                          label: "Nieobecny",
                           color: "#f1f1f1"
                         }
                       }}
@@ -102,7 +102,16 @@ const SessionPrep = () => {
                           domain={[0, 5]}
                           ticks={[0, 1, 2, 3, 4]}
                         />
-                        <Tooltip />
+                        <Tooltip content={({ active, payload }) => {
+                          if (active && payload && payload.length) {
+                            return (
+                              <div className="bg-white p-2 border border-gray-200 rounded shadow-sm">
+                                <p className="text-xs">{`${payload[0].payload.month}: ${payload[0].value} / ${payload[0].payload.sessions} sesji`}</p>
+                              </div>
+                            );
+                          }
+                          return null;
+                        }} />
                         <Bar dataKey="count" fill="var(--color-attended)" radius={[4, 4, 0, 0]} />
                       </BarChart>
                     </ChartContainer>
@@ -111,8 +120,8 @@ const SessionPrep = () => {
                 
                 <div className="bg-gray-50 p-4 rounded-lg">
                   <div className="flex justify-between mb-2">
-                    <span className="text-sm font-medium">Attendance Calendar</span>
-                    <span className="text-xs text-gray-500">Last 20 weeks</span>
+                    <span className="text-sm font-medium">Kalendarz obecności</span>
+                    <span className="text-xs text-gray-500">Ostatnie 20 tygodni</span>
                   </div>
                   <div className="flex flex-wrap gap-1">
                     {weeklyData.map((week, i) => (
@@ -123,7 +132,7 @@ const SessionPrep = () => {
                           backgroundColor: week.attended ? "#4c6fff33" : "#f1f1f1",
                           border: week.attended ? "1px solid #4c6fff" : "1px solid #e5e7eb"
                         }}
-                        title={`Week ${week.week}: ${week.attended ? "Attended" : "Missed"}`}
+                        title={`Tydzień ${week.week}: ${week.attended ? "Obecny" : "Nieobecny"}`}
                       />
                     ))}
                   </div>
@@ -134,7 +143,7 @@ const SessionPrep = () => {
               <div className="space-y-4">
                 <h2 className="text-lg font-medium flex items-center gap-2">
                   <FileText size={18} />
-                  <span>Previous Session Notes</span>
+                  <span>Notatki z poprzednich sesji</span>
                 </h2>
                 
                 <div className="max-h-64 overflow-y-auto space-y-3 pr-2">
@@ -149,7 +158,7 @@ const SessionPrep = () => {
                           <div className="text-xs text-gray-500 mb-1 flex items-center gap-2">
                             <span>{note.type.name}</span>
                             <span>•</span>
-                            <span>{note.timestamp.toLocaleDateString()}</span>
+                            <span>{note.timestamp.toLocaleDateString('pl-PL')}</span>
                           </div>
                           <p className="text-sm">{note.content}</p>
                         </div>
@@ -163,14 +172,14 @@ const SessionPrep = () => {
           
           {/* Session preparation */}
           <Card className="p-6">
-            <h2 className="text-lg font-medium mb-4">Session Preparation</h2>
+            <h2 className="text-lg font-medium mb-4">Przygotowanie sesji</h2>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-4">
                 <div>
                   <label className="text-sm font-medium flex items-center gap-2 mb-2">
                     <Clock size={16} />
-                    <span>Session Duration (minutes)</span>
+                    <span>Czas trwania sesji (minuty)</span>
                   </label>
                   <div className="flex items-center gap-2">
                     {[30, 45, 50, 60, 90].map(duration => (
@@ -190,7 +199,7 @@ const SessionPrep = () => {
                 <div>
                   <label className="text-sm font-medium flex items-center gap-2 mb-2">
                     <Target size={16} />
-                    <span>Session Goals</span>
+                    <span>Cele sesji</span>
                   </label>
                   <div className="space-y-2 mb-3">
                     {sessionGoals.map((goal, index) => (
@@ -202,19 +211,19 @@ const SessionPrep = () => {
                           size="sm"
                           onClick={() => removeGoal(index)}
                         >
-                          Remove
+                          Usuń
                         </Button>
                       </div>
                     ))}
                   </div>
                   <div className="flex gap-2">
                     <Input
-                      placeholder="Add a new goal..."
+                      placeholder="Dodaj nowy cel..."
                       value={newGoal}
                       onChange={(e) => setNewGoal(e.target.value)}
                       onKeyDown={(e) => e.key === 'Enter' && addGoal()}
                     />
-                    <Button type="button" onClick={addGoal}>Add</Button>
+                    <Button type="button" onClick={addGoal}>Dodaj</Button>
                   </div>
                 </div>
               </div>
@@ -222,10 +231,10 @@ const SessionPrep = () => {
               <div>
                 <label className="text-sm font-medium flex items-center gap-2 mb-2">
                   <List size={16} />
-                  <span>Session Notes</span>
+                  <span>Notatki do sesji</span>
                 </label>
                 <Textarea
-                  placeholder="Add any notes or reminders for this session..."
+                  placeholder="Dodaj notatkę lub przypomnienie na tę sesję..."
                   className="min-h-36"
                   value={sessionNotes}
                   onChange={(e) => setSessionNotes(e.target.value)}
@@ -238,27 +247,27 @@ const SessionPrep = () => {
           <Card className="p-6">
             <h2 className="text-lg font-medium mb-4 flex items-center gap-2">
               <Activity size={18} />
-              <span>Planned Exercises</span>
+              <span>Zaplanowane ćwiczenia</span>
             </h2>
             
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <Card className="overflow-hidden border-2 border-blue-100">
                 <div className="bg-blue-50 p-3">
-                  <h3 className="font-medium">Emotion Wheel</h3>
-                  <p className="text-sm text-gray-600">Identify and articulate emotions</p>
+                  <h3 className="font-medium">Koło emocji</h3>
+                  <p className="text-sm text-gray-600">Identyfikacja i wyrażanie emocji</p>
                 </div>
                 <div className="p-3 flex justify-end">
-                  <Button variant="outline" size="sm">Preview</Button>
+                  <Button variant="outline" size="sm">Podgląd</Button>
                 </div>
               </Card>
               
               <Card className="overflow-hidden border-2 border-green-100">
                 <div className="bg-green-50 p-3">
-                  <h3 className="font-medium">Breathing Exercise</h3>
-                  <p className="text-sm text-gray-600">4-7-8 breath technique for anxiety</p>
+                  <h3 className="font-medium">Ćwiczenie oddechowe</h3>
+                  <p className="text-sm text-gray-600">Technika oddechu 4-7-8 na lęk</p>
                 </div>
                 <div className="p-3 flex justify-end">
-                  <Button variant="outline" size="sm">Preview</Button>
+                  <Button variant="outline" size="sm">Podgląd</Button>
                 </div>
               </Card>
             </div>
@@ -272,7 +281,7 @@ const SessionPrep = () => {
           onClick={startSession}
           className="gap-2"
         >
-          <span>Start Session</span>
+          <span>Rozpocznij sesję</span>
           <ChevronRight size={18} />
         </Button>
       </div>

@@ -7,31 +7,31 @@ export const MobileNav = () => {
   
   const navItems = [
     { 
-      name: "Home", 
+      name: "Główna", 
       icon: <Home size={20} />, 
       path: "/dashboard",
       active: location.pathname === "/dashboard"
     },
     { 
-      name: "Clients", 
+      name: "Klienci", 
       icon: <Users size={20} />, 
       path: "/clients",
       active: location.pathname.includes("/clients")
     },
     { 
-      name: "Sessions", 
+      name: "Sesje", 
       icon: <FileText size={20} />, 
       path: "/sessions",
       active: location.pathname.includes("/sessions")
     },
     { 
-      name: "Tools", 
+      name: "Narzędzia", 
       icon: <Briefcase size={20} />, 
       path: "/tools",
       active: location.pathname.includes("/tools")
     },
     { 
-      name: "Settings", 
+      name: "Ustawienia", 
       icon: <Settings size={20} />, 
       path: "/settings",
       active: location.pathname.includes("/settings")

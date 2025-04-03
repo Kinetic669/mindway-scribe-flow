@@ -108,6 +108,10 @@ export const Notepad = ({ onAddNote, onToggleDrawing }: NotepadProps) => {
               onClick={() => {
                 setSelectedType(type);
                 toast.success(`Typ notatki: ${type.name}`);
+                // Focus on textarea after selecting a note type
+                if (textareaRef.current) {
+                  textareaRef.current.focus();
+                }
               }}
             >
               {getIconForType(type.name)}
@@ -198,6 +202,10 @@ export const Notepad = ({ onAddNote, onToggleDrawing }: NotepadProps) => {
           size="sm"
           onClick={handleSubmit}
           disabled={noteContent.trim() === ""}
+          style={{ 
+            backgroundColor: selectedType.color,
+            borderColor: selectedType.color
+          }}
         >
           <Send size={16} className="mr-1" /> Wyślij
         </Button>
