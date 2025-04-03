@@ -59,3 +59,13 @@ export type DrawingTool = {
   size: number;
   color: string;
 };
+
+export type ExerciseResult = {
+  id: string;
+  exerciseId: string;
+  sessionId: string;
+  clientId: string;
+  data: Record<string, any>;
+  completedAt: Date;
+  notes?: string;
+};

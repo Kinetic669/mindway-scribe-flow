@@ -4,41 +4,27 @@ import { Link } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
 import { Note, NoteType, Tool } from "@/types";
 import { mockNotes, mockTools, noteTypes } from "@/data/mockData";
-import { Notepad } from "@/components/session/Notepad";
-import { Timeline } from "@/components/session/Timeline";
-import { ToolDrawer } from "@/components/session/ToolDrawer";
 import { DrawingCanvas } from "@/components/session/DrawingCanvas";
 import { NavBar } from "@/components/NavBar";
 import { Button } from "@/components/ui/button";
+import { SessionTabs } from "@/components/session/SessionTabs";
 import { 
   ChevronLeft, 
   Clock, 
-  MoreHorizontal, 
-  Package, 
-  Heart,
-  Wind,
-  FileText
+  MoreHorizontal
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { toast } from "sonner";
 import { EmotionWheel } from "@/components/exercises/EmotionWheel";
 import { BreathingExercise } from "@/components/exercises/BreathingExercise";
 import { ReflectionPrompt } from "@/components/exercises/ReflectionPrompt";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 
 const DemoSession = () => {
   const [notes, setNotes] = useState<Note[]>(mockNotes);
-  const [isToolDrawerOpen, setIsToolDrawerOpen] = useState(false);
   const [isDrawingMode, setIsDrawingMode] = useState(false);
   const [sessionStartTime] = useState(new Date());
   const [sessionDuration, setSessionDuration] = useState(0);
   const [activeExercise, setActiveExercise] = useState<string | null>(null);
-  const [quickToolsOpen, setQuickToolsOpen] = useState(false);
 
   useEffect(() => {
     // Update session duration every minute
@@ -62,45 +48,24 @@ const DemoSession = () => {
     };
 
     setNotes(prev => [newNote, ...prev]);
-    toast.success("Note added to timeline");
+    toast.success("Notatka dodana do osi czasu");
   };
 
   const deleteNote = (id: string) => {
     setNotes(prev => prev.filter(note => note.id !== id));
-    toast.success("Note deleted");
+    toast.success("Notatka usunięta");
   };
 
-  const handleToolSelected = (tool: Tool) => {
-    // Determine which exercise to show based on tool
-    if (tool.name === "Emotion Wheel") {
-      setActiveExercise("emotion-wheel");
-    } else if (tool.name === "Breathing Exercise") {
-      setActiveExercise("breathing");
-    } else if (tool.name === "Thought Record") {
-      setActiveExercise("reflection");
-    } else {
-      // For other tools, just add a note
-      const toolNote: Note = {
-        id: uuidv4(),
-        content: `Tool assigned: ${tool.name}`,
-        type: noteTypes.find(t => t.name === "Action Item") || noteTypes[0],
-        timestamp: new Date(),
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      };
-  
-      setNotes(prev => [toolNote, ...prev]);
-    }
-    
-    setIsToolDrawerOpen(false);
-    toast.success(`${tool.name} assigned`);
+  const handleAssignExercise = (exerciseType: string) => {
+    setActiveExercise(exerciseType);
+    toast.success(`Ćwiczenie wybrane: ${exerciseType}`);
   };
 
   const handleDrawingSave = (imageData: string) => {
     const drawingNote: Note = {
       id: uuidv4(),
       content: imageData,
-      type: noteTypes.find(t => t.name === "Therapist Insight") || noteTypes[0],
+      type: noteTypes.find(t => t.name === "Spostrzeżenie terapeuty") || noteTypes[0],
       timestamp: new Date(),
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -108,14 +73,14 @@ const DemoSession = () => {
 
     setNotes(prev => [drawingNote, ...prev]);
     setIsDrawingMode(false);
-    toast.success("Drawing added to timeline");
+    toast.success("Rysunek dodany do osi czasu");
   };
 
   const handleEmotionWheelSave = (data: { emotion: string; intensity: number; notes: string }) => {
     const emotionNote: Note = {
       id: uuidv4(),
-      content: `Client identified feeling: ${data.emotion} (${data.intensity}/10)\n\nNotes: ${data.notes}`,
-      type: noteTypes.find(t => t.name === "Client Quote") || noteTypes[0],
+      content: `Klient zidentyfikował emocję: ${data.emotion} (${data.intensity}/10)\n\nNotatki: ${data.notes}`,
+      type: noteTypes.find(t => t.name === "Wypowiedź klienta") || noteTypes[0],
       timestamp: new Date(),
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -123,7 +88,7 @@ const DemoSession = () => {
 
     setNotes(prev => [emotionNote, ...prev]);
     setActiveExercise(null);
-    toast.success("Emotion wheel results added to timeline");
+    toast.success("Wyniki koła emocji dodane do osi czasu");
   };
 
   const handleBreathingExerciseSave = (data: { completed: boolean; duration: number }) => {
@@ -135,8 +100,8 @@ const DemoSession = () => {
 
     const breathingNote: Note = {
       id: uuidv4(),
-      content: `Client completed breathing exercise.\nDuration: ${formatTime(data.duration)}\nStatus: ${data.completed ? 'Completed' : 'Partial'}`,
-      type: noteTypes.find(t => t.name === "Observation") || noteTypes[0],
+      content: `Klient wykonał ćwiczenie oddechowe.\nCzas trwania: ${formatTime(data.duration)}\nStatus: ${data.completed ? 'Ukończone' : 'Częściowe'}`,
+      type: noteTypes.find(t => t.name === "Obserwacja") || noteTypes[0],
       timestamp: new Date(),
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -144,18 +109,18 @@ const DemoSession = () => {
 
     setNotes(prev => [breathingNote, ...prev]);
     setActiveExercise(null);
-    toast.success("Breathing exercise results added to timeline");
+    toast.success("Wyniki ćwiczenia oddechowego dodane do osi czasu");
   };
 
   const handleReflectionSave = (data: { responses: Record<string, string> }) => {
     const { responses } = data;
     
-    const formattedContent = `Client Reflection:\n\nSituation: ${responses.situation}\n\nThoughts: ${responses.thoughts}\n\nEmotions: ${responses.emotions}\n\nBehavior: ${responses.behavior}\n\nAlternative Perspective: ${responses.alternative}`;
+    const formattedContent = `Refleksja klienta:\n\nSytuacja: ${responses.situation}\n\nMyśli: ${responses.thoughts}\n\nEmocje: ${responses.emotions}\n\nZachowanie: ${responses.behavior}\n\nAlternatywna perspektywa: ${responses.alternative}`;
     
     const reflectionNote: Note = {
       id: uuidv4(),
       content: formattedContent,
-      type: noteTypes.find(t => t.name === "Reflection") || noteTypes[0],
+      type: noteTypes.find(t => t.name === "Refleksja") || noteTypes[0],
       timestamp: new Date(),
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -163,30 +128,8 @@ const DemoSession = () => {
 
     setNotes(prev => [reflectionNote, ...prev]);
     setActiveExercise(null);
-    toast.success("Reflection responses added to timeline");
+    toast.success("Refleksje dodane do osi czasu");
   };
-
-  // Quick access tools
-  const quickTools = [
-    {
-      name: "Emotion Wheel",
-      icon: <Heart size={18} />,
-      color: "#F43F5E",
-      onClick: () => setActiveExercise("emotion-wheel")
-    },
-    {
-      name: "Breathing",
-      icon: <Wind size={18} />,
-      color: "#10B981",
-      onClick: () => setActiveExercise("breathing")
-    },
-    {
-      name: "Reflection",
-      icon: <FileText size={18} />,
-      color: "#6366F1",
-      onClick: () => setActiveExercise("reflection")
-    }
-  ];
 
   return (
     <div className="min-h-screen flex flex-col pb-6">
@@ -202,87 +145,34 @@ const DemoSession = () => {
               </Link>
             </Button>
             <div>
-              <h1 className="text-xl font-semibold">Demo Session</h1>
+              <h1 className="text-xl font-semibold">Sesja demonstracyjna</h1>
               <div className="flex items-center gap-2 text-sm text-gray-500">
                 <Clock size={14} />
                 <span>
                   {sessionDuration > 0 
-                    ? `${sessionDuration} ${sessionDuration === 1 ? 'minute' : 'minutes'}`
-                    : 'Just started'}
+                    ? `${sessionDuration} ${sessionDuration === 1 ? 'minuta' : 
+                      sessionDuration < 5 ? 'minuty' : 'minut'}`
+                    : 'Rozpoczęta przed chwilą'}
                 </span>
               </div>
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <Button 
-              variant="outline" 
-              size="sm" 
-              onClick={() => setQuickToolsOpen(!quickToolsOpen)}
-              className="flex items-center gap-1"
-            >
-              <Package size={16} /> Quick Tools
-            </Button>
-            <Button 
-              variant="outline" 
-              size="sm" 
-              onClick={() => setIsToolDrawerOpen(true)}
-              className="flex items-center gap-1"
-            >
-              Full Library
-            </Button>
             <Button size="icon" variant="ghost">
               <MoreHorizontal size={18} />
             </Button>
           </div>
         </Card>
         
-        {/* Quick Tools Floating Menu */}
-        {quickToolsOpen && (
-          <div className="fixed bottom-24 right-8 z-30 bg-white rounded-lg shadow-lg border p-2 animate-fade-in">
-            <div className="flex flex-col gap-2">
-              {quickTools.map((tool) => (
-                <Button
-                  key={tool.name}
-                  variant="outline"
-                  className="flex justify-start gap-2 px-3"
-                  onClick={() => {
-                    tool.onClick();
-                    setQuickToolsOpen(false);
-                  }}
-                >
-                  <div 
-                    className="p-1 rounded-md"
-                    style={{ backgroundColor: `${tool.color}20` }}
-                  >
-                    {tool.icon}
-                  </div>
-                  <span>{tool.name}</span>
-                </Button>
-              ))}
-            </div>
-          </div>
-        )}
-        
-        {/* Notepad Component */}
-        <Notepad 
-          onAddNote={addNote} 
-          onToggleDrawing={() => setIsDrawingMode(true)} 
-        />
-        
-        {/* Timeline Component */}
-        <Timeline 
-          notes={notes.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime())} 
+        {/* Tabs Interface */}
+        <SessionTabs 
+          notes={notes.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime())}
+          onAddNote={addNote}
           onDeleteNote={deleteNote}
+          onToggleDrawing={() => setIsDrawingMode(true)}
+          onAssignExercise={handleAssignExercise}
         />
       </main>
-      
-      {/* Tool Drawer */}
-      <ToolDrawer
-        isOpen={isToolDrawerOpen}
-        onClose={() => setIsToolDrawerOpen(false)}
-        tools={mockTools}
-        onToolSelected={handleToolSelected}
-      />
       
       {/* Drawing Canvas */}
       {isDrawingMode && (

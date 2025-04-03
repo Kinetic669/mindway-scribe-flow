@@ -4,6 +4,7 @@ import { Note } from "@/types";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
+import { pl } from "date-fns/locale";
 import { Clock, Edit, Trash2 } from "lucide-react";
 
 type TimelineProps = {
@@ -19,16 +20,16 @@ export const Timeline = ({ notes, onDeleteNote }: TimelineProps) => {
   };
 
   const formatTime = (date: Date) => {
-    return format(date, "h:mm a");
+    return format(date, "H:mm", { locale: pl });
   };
 
   return (
     <div className="py-4">
-      <h2 className="text-lg font-medium mb-4">Session Timeline</h2>
+      <h2 className="text-lg font-medium mb-4">Oś czasu sesji</h2>
       
       {notes.length === 0 ? (
         <div className="text-center py-8 text-gray-500">
-          <p>No notes yet. Start by typing in the notepad above.</p>
+          <p>Brak notatek. Zacznij pisać w notatniku powyżej.</p>
         </div>
       ) : (
         <div className="space-y-4">
@@ -64,7 +65,7 @@ export const Timeline = ({ notes, onDeleteNote }: TimelineProps) => {
                     <div className="note-card-content">
                       <img 
                         src={note.content} 
-                        alt="Handwritten note" 
+                        alt="Odręczna notatka" 
                         className="max-w-full rounded"
                       />
                     </div>
@@ -77,7 +78,7 @@ export const Timeline = ({ notes, onDeleteNote }: TimelineProps) => {
                   {expandedNote === note.id && (
                     <div className="mt-4 pt-3 border-t flex justify-end gap-2">
                       <Button variant="outline" size="sm">
-                        <Edit size={14} className="mr-1" /> Edit
+                        <Edit size={14} className="mr-1" /> Edytuj
                       </Button>
                       <Button 
                         variant="outline" 
@@ -87,7 +88,7 @@ export const Timeline = ({ notes, onDeleteNote }: TimelineProps) => {
                           onDeleteNote(note.id);
                         }}
                       >
-                        <Trash2 size={14} className="mr-1" /> Delete
+                        <Trash2 size={14} className="mr-1" /> Usuń
                       </Button>
                     </div>
                   )}
