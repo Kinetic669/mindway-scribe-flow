@@ -1,5 +1,5 @@
 
-import { Client, Note, NoteType, Session, Tool } from "../types";
+import { Client, Note, NoteType, Session, Tool, SessionAttendance } from "../types";
 
 export const noteTypes: NoteType[] = [
   {
@@ -92,10 +92,10 @@ export const mockTools: Tool[] = [
   },
   {
     id: "2",
-    name: "Grounding Exercise",
-    description: "5-4-3-2-1 sensory awareness technique for anxiety relief",
+    name: "Breathing Exercise",
+    description: "4-7-8 breath technique for anxiety relief",
     category: "Mindfulness",
-    icon: "anchor",
+    icon: "wind",
   },
   {
     id: "3",
@@ -113,28 +113,64 @@ export const mockTools: Tool[] = [
   },
   {
     id: "5",
-    name: "Breathing Exercise",
-    description: "Guided diaphragmatic breathing for relaxation",
+    name: "Grounding Exercise",
+    description: "5-4-3-2-1 sensory awareness technique for anxiety relief",
     category: "Mindfulness",
-    icon: "wind",
+    icon: "anchor",
   },
 ];
+
+// Generate attendance history for the past year
+const generateAttendanceHistory = (): SessionAttendance[] => {
+  const history: SessionAttendance[] = [];
+  const today = new Date();
+  const startDate = new Date(today);
+  startDate.setFullYear(today.getFullYear() - 1);
+  
+  // Weekly sessions for a year
+  for (let i = 0; i < 52; i++) {
+    const sessionDate = new Date(startDate);
+    sessionDate.setDate(sessionDate.getDate() + (i * 7));
+    
+    // 80% attendance rate
+    const attended = Math.random() > 0.2;
+    
+    history.push({
+      date: sessionDate,
+      attended
+    });
+  }
+  
+  return history;
+};
 
 export const mockClients: Client[] = [
   {
     id: "1",
     name: "Alex Johnson",
+    startDate: new Date(new Date().setFullYear(new Date().getFullYear() - 1)),
+    attendanceHistory: generateAttendanceHistory(),
     sessions: [],
+    issues: ["Anxiety", "Work stress", "Relationship difficulties"],
+    backgroundInfo: "Alex has been struggling with work-related anxiety for the past year. Recently promoted to a management position, they're finding it difficult to balance new responsibilities with personal life."
   },
   {
     id: "2",
     name: "Taylor Smith",
+    startDate: new Date(new Date().setMonth(new Date().getMonth() - 6)),
+    attendanceHistory: generateAttendanceHistory().slice(26),
     sessions: [],
+    issues: ["Depression", "Self-esteem", "Grief"],
+    backgroundInfo: "Taylor started therapy after losing a parent six months ago. They've been experiencing persistent low mood, sleep disturbances, and lack of motivation."
   },
   {
     id: "3",
     name: "Jordan Davis",
+    startDate: new Date(new Date().setMonth(new Date().getMonth() - 3)),
+    attendanceHistory: generateAttendanceHistory().slice(39),
     sessions: [],
+    issues: ["ADHD", "Organization", "Academic performance"],
+    backgroundInfo: "Jordan is a college student recently diagnosed with ADHD. They're seeking strategies to improve focus, organization, and academic performance."
   },
 ];
 
@@ -146,6 +182,7 @@ export const mockSessions: Session[] = [
     date: new Date(),
     notes: mockNotes,
     status: "in-progress",
+    goals: ["Address work anxiety", "Practice mindfulness", "Explore coping strategies"]
   },
 ];
 

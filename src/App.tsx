@@ -8,6 +8,7 @@ import Index from "./pages/Index";
 import DemoSession from "./pages/DemoSession";
 import Dashboard from "./pages/Dashboard";
 import NotFound from "./pages/NotFound";
+import SessionPrep from "./pages/SessionPrep";
 
 const queryClient = new QueryClient();
 
@@ -19,6 +20,7 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
+          <Route path="/demo/session/prep" element={<SessionPrep />} />
           <Route path="/demo/session" element={<DemoSession />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="*" element={<NotFound />} />
