@@ -1,9 +1,7 @@
 
 import { Metadata } from "next";
 
-export function generateMetadata(): Metadata {
-  return {
-    title: "Mindway - Przygotowanie sesji",
-    description: "Zaplanuj swoją sesję terapeutyczną",
-  };
-}
+export const metadata: Metadata = {
+  title: "Mindway - Przygotowanie sesji",
+  description: "Zaplanuj swoją sesję terapeutyczną",
+};

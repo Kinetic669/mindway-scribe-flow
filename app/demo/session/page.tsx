@@ -1,10 +1,11 @@
+
 "use client";
 
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { v4 as uuidv4 } from "uuid";
-import { Note, NoteType, Tool } from "@/types";
-import { mockNotes, mockTools, noteTypes } from "@/data/mockData";
+import { Note, NoteType } from "@/types";
+import { mockNotes, noteTypes } from "@/data/mockData";
 import { DrawingCanvas } from "@/components/session/DrawingCanvas";
 import { NavBar } from "@/components/NavBar";
 import { Button } from "@/components/ui/button";
@@ -76,7 +77,7 @@ export default function DemoSession() {
       };
       setNotes(prev => [planningNote, ...prev]);
     }
-  }, []);
+  }, [sessionNotes]);
 
   const addNote = (content: string, type: NoteType) => {
     const newNote: Note = {
@@ -170,15 +171,6 @@ export default function DemoSession() {
     setNotes(prev => [reflectionNote, ...prev]);
     setActiveExercise(null);
     toast.success("Refleksje dodane do osi czasu");
-  };
-
-  // Format session duration in Polish
-  const formatSessionDuration = (minutes: number) => {
-    if (minutes === 0) return "Rozpoczęta przed chwilą";
-    
-    if (minutes === 1) return "1 minuta";
-    if (minutes < 5) return `${minutes} minuty`;
-    return `${minutes} minut`;
   };
 
   const handleNoteClick = (noteId: string) => {

@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect } from "react";
@@ -40,6 +41,7 @@ import {
 } from "recharts";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
+import Link from "next/link";
 
 export default function SessionPrep() {
   const router = useRouter();
@@ -145,8 +147,8 @@ export default function SessionPrep() {
     
     if (typeof window !== "undefined") {
       sessionStorage.setItem('sessionPrepData', JSON.stringify(sessionPrepData));
-      toast.success("Dane sesji zapisane pomyślnie");
     }
+    toast.success("Dane sesji zapisane pomyślnie");
     
     // Navigate to the session
     router.push("/demo/session");
@@ -355,7 +357,7 @@ export default function SessionPrep() {
                   key={exercise.id} 
                   className={`overflow-hidden border-2 ${
                     selectedExercises.includes(exercise.id) 
-                      ? `border-${exercise.color.slice(1)}` 
+                      ? "border-${exercise.color.slice(1)}" 
                       : 'border-gray-100'
                   }`}
                 >
