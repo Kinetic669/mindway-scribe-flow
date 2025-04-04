@@ -1,14 +1,27 @@
 
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Card } from "@/components/ui/card";
+import Link from "next/link";
+import { v4 as uuidv4 } from "uuid";
+import { mockClients, mockNotes } from "@/data/mockData";
+import { NavBar } from "@/components/NavBar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { NavBar } from "@/components/NavBar";
-import { mockClients, mockNotes } from "@/data/mockData";
+import { Card } from "@/components/ui/card";
+import { toast } from "sonner";
+import { Checkbox } from "@/components/ui/checkbox";
+import { ChartContainer } from "@/components/ui/chart";
+import { 
+  CartesianGrid, 
+  XAxis, 
+  YAxis, 
+  Tooltip, 
+  BarChart, 
+  Bar 
+} from "recharts";
 import { 
   ChevronRight, 
   Clock, 
@@ -19,7 +32,6 @@ import {
   List, 
   Activity,
   X,
-  Check,
   Brain,
   HeartPulse,
   Wind,
@@ -27,21 +39,6 @@ import {
   FileText as FileTextIcon,
   Zap
 } from "lucide-react";
-import { ChartContainer } from "@/components/ui/chart";
-import { 
-  CartesianGrid, 
-  XAxis, 
-  YAxis, 
-  Tooltip, 
-  ResponsiveContainer, 
-  LineChart, 
-  Line, 
-  BarChart, 
-  Bar 
-} from "recharts";
-import { Checkbox } from "@/components/ui/checkbox";
-import { toast } from "sonner";
-import Link from "next/link";
 
 export default function SessionPrep() {
   const router = useRouter();
@@ -357,9 +354,12 @@ export default function SessionPrep() {
                   key={exercise.id} 
                   className={`overflow-hidden border-2 ${
                     selectedExercises.includes(exercise.id) 
-                      ? "border-${exercise.color.slice(1)}" 
+                      ? "border-gray-400" 
                       : 'border-gray-100'
                   }`}
+                  style={{
+                    borderColor: selectedExercises.includes(exercise.id) ? exercise.color : undefined 
+                  }}
                 >
                   <div 
                     className="p-4 flex justify-between items-start"

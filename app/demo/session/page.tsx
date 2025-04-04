@@ -3,6 +3,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { v4 as uuidv4 } from "uuid";
 import { Note, NoteType } from "@/types";
 import { mockNotes, noteTypes } from "@/data/mockData";
@@ -21,7 +22,6 @@ import { toast } from "sonner";
 import { EmotionWheel } from "@/components/exercises/EmotionWheel";
 import { BreathingExercise } from "@/components/exercises/BreathingExercise";
 import { ReflectionPrompt } from "@/components/exercises/ReflectionPrompt";
-import Link from "next/link";
 
 export default function DemoSession() {
   const router = useRouter();
