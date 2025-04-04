@@ -1,10 +1,9 @@
 
+"use client";
+
 import { useState, useRef, useEffect } from "react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Note, NoteType, Tool } from "@/types";
-import { Notepad } from "./Notepad";
-import { Timeline } from "./Timeline";
-import { Card } from "@/components/ui/card";
+import { Note, NoteType } from "@/types";
 import { Badge } from "@/components/ui/badge";
 import { 
   MessageSquare, 
@@ -15,8 +14,10 @@ import {
   Target, 
   Zap,
   History,
-  Info
 } from "lucide-react";
+import { NotesTab } from "./tabs/NotesTab";
+import { ExercisesTab } from "./tabs/ExercisesTab";
+import { DetailsTab } from "./tabs/DetailsTab";
 
 type SessionTabsProps = {
   notes: Note[];
@@ -132,28 +133,9 @@ export function SessionTabs({
     }
   }, [touchStartX, touchEndX, activeTab]);
 
-  // Split exercises into planned and other
-  const plannedExercisesList = exercises.filter(ex => plannedExercises.includes(ex.id));
-  const otherExercises = exercises.filter(ex => !plannedExercises.includes(ex.id));
-
   const handleChangeNoteType = (noteId: string, typeId: string) => {
     // This is a placeholder - in a real app we would update the note type
     console.log(`Changing note ${noteId} to type ${typeId}`);
-  };
-
-  const scrollToNote = (noteId: string) => {
-    setActiveTab("szczegoly");
-    setTimeout(() => {
-      const noteElement = document.getElementById(`note-${noteId}`);
-      if (noteElement) {
-        noteElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        // Add a highlight effect
-        noteElement.classList.add('bg-yellow-50');
-        setTimeout(() => {
-          noteElement.classList.remove('bg-yellow-50');
-        }, 2000);
-      }
-    }, 100);
   };
 
   return (
@@ -172,9 +154,9 @@ export function SessionTabs({
           <TabsTrigger value="cwiczenia" className="flex items-center gap-2 relative">
             <Brain size={16} />
             <span>Ćwiczenia</span>
-            {plannedExercisesList.length > 0 && (
+            {plannedExercises.length > 0 && (
               <Badge className="absolute -right-1 -top-1 bg-amber-500 h-4 w-4 p-0 flex items-center justify-center">
-                {plannedExercisesList.length}
+                {plannedExercises.length}
               </Badge>
             )}
           </TabsTrigger>
@@ -185,127 +167,31 @@ export function SessionTabs({
         </TabsList>
         
         <TabsContent value="notatki" className="space-y-4">
-          <Notepad 
-            onAddNote={onAddNote} 
-            onToggleDrawing={onToggleDrawing} 
-          />
-          <Timeline 
-            notes={notes} 
-            onDeleteNote={onDeleteNote} 
+          <NotesTab
+            notes={notes}
+            onAddNote={onAddNote}
+            onDeleteNote={onDeleteNote}
+            onToggleDrawing={onToggleDrawing}
           />
         </TabsContent>
         
         <TabsContent value="cwiczenia" className="space-y-4">
-          {plannedExercisesList.length > 0 && (
-            <>
-              <div className="flex items-center gap-2 mb-2">
-                <h2 className="text-lg font-medium">Zaplanowane ćwiczenia</h2>
-                <Badge variant="secondary">Zaplanowane przed sesją</Badge>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                {plannedExercisesList.map((exercise) => (
-                  <Card 
-                    key={exercise.id}
-                    className="p-4 cursor-pointer hover:shadow-md transition-shadow border-amber-200"
-                    onClick={() => {
-                      onAssignExercise(exercise.id);
-                      setActiveTab("notatki");
-                    }}
-                  >
-                    <div className="flex items-start gap-3">
-                      <div 
-                        className="p-2 rounded-md"
-                        style={{ backgroundColor: `${exercise.color}20` }}
-                      >
-                        {exercise.icon}
-                      </div>
-                      <div>
-                        <h3 className="font-medium">{exercise.name}</h3>
-                        <p className="text-sm text-gray-500">{exercise.description}</p>
-                      </div>
-                    </div>
-                  </Card>
-                ))}
-              </div>
-            </>
-          )}
-          
-          <h2 className="text-lg font-medium mb-4">Wszystkie ćwiczenia</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {otherExercises.map((exercise) => (
-              <Card 
-                key={exercise.id}
-                className="p-4 cursor-pointer hover:shadow-md transition-shadow"
-                onClick={() => {
-                  onAssignExercise(exercise.id);
-                  setActiveTab("notatki");
-                }}
-              >
-                <div className="flex items-start gap-3">
-                  <div 
-                    className="p-2 rounded-md"
-                    style={{ backgroundColor: `${exercise.color}20` }}
-                  >
-                    {exercise.icon}
-                  </div>
-                  <div>
-                    <h3 className="font-medium">{exercise.name}</h3>
-                    <p className="text-sm text-gray-500">{exercise.description}</p>
-                  </div>
-                </div>
-              </Card>
-            ))}
-          </div>
+          <ExercisesTab 
+            exercises={exercises}
+            plannedExercises={plannedExercises}
+            onAssignExercise={(exerciseId) => {
+              onAssignExercise(exerciseId);
+              setActiveTab("notatki");
+            }}
+          />
         </TabsContent>
         
         <TabsContent value="szczegoly" className="space-y-4">
-          <h2 className="text-lg font-medium mb-4">Szczegóły sesji</h2>
-          
-          <Card className="p-4">
-            <div className="space-y-4">
-              <div>
-                <h3 className="text-sm font-medium text-gray-500 mb-1">Czas trwania</h3>
-                <p className="font-medium">50 minut</p>
-              </div>
-              
-              <div>
-                <h3 className="text-sm font-medium text-gray-500 mb-1">Cele sesji</h3>
-                <ul className="list-disc list-inside space-y-1">
-                  <li>Praca nad regulacją emocji</li>
-                  <li>Omówienie zadań domowych</li>
-                </ul>
-              </div>
-              
-              <div>
-                <h3 className="text-sm font-medium text-gray-500 mb-1">Statystyki sesji</h3>
-                <div className="grid grid-cols-2 gap-2 mt-2">
-                  <div className="bg-gray-50 p-2 rounded">
-                    <span className="text-xs text-gray-500">Notatki</span>
-                    <p className="font-medium">{notes.length}</p>
-                  </div>
-                  <div className="bg-gray-50 p-2 rounded">
-                    <span className="text-xs text-gray-500">Ćwiczenia</span>
-                    <p className="font-medium">{plannedExercisesList.length}</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </Card>
-          
-          <div className="mt-6">
-            <div className="flex items-center gap-2 mb-4">
-              <h3 className="text-lg font-medium">Pełna oś czasu</h3>
-              <Badge variant="outline" className="flex items-center gap-1">
-                <Info size={12} />
-                <span>Rozszerzona</span>
-              </Badge>
-            </div>
-            <Timeline 
-              notes={notes} 
-              onDeleteNote={onDeleteNote} 
-              onChangeNoteType={handleChangeNoteType}
-            />
-          </div>
+          <DetailsTab 
+            notes={notes}
+            onDeleteNote={onDeleteNote}
+            onChangeNoteType={handleChangeNoteType}
+          />
         </TabsContent>
       </Tabs>
       

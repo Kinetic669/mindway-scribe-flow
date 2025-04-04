@@ -11,7 +11,7 @@ import { DrawingCanvas } from "@/components/session/DrawingCanvas";
 import { NavBar } from "@/components/NavBar";
 import { Button } from "@/components/ui/button";
 import { SessionTabs } from "@/components/session/SessionTabs";
-import { MinimalTimeline } from "@/components/session/MinimalTimeline";
+import { MinimalTimeline } from "@/components/session/minimaltimeline/MinimalTimeline";
 import { 
   ChevronLeft, 
   Clock, 
