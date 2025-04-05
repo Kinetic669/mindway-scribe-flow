@@ -28,7 +28,7 @@ export default function DemoSession() {
   const [notes, setNotes] = useState<Note[]>(mockNotes);
   const [isDrawingMode, setIsDrawingMode] = useState(false);
   const [sessionStartTime] = useState(new Date());
-  const [sessionDuration, setSessionDuration] = useState(0);
+  const [sessionDuration, setSessionDuration] = useState(50); // Default 50 minutes
   const [activeExercise, setActiveExercise] = useState<string | null>(null);
   const [showMinimalTimeline, setShowMinimalTimeline] = useState(true);
   const [plannedExercises, setPlannedExercises] = useState<string[]>([]);
@@ -48,36 +48,46 @@ export default function DemoSession() {
         if (data.plannedExercises) setPlannedExercises(data.plannedExercises);
         if (data.sessionGoals) setSessionGoals(data.sessionGoals);
         if (data.sessionNotes) setSessionNotes(data.sessionNotes);
+        if (data.sessionDuration) setSessionDuration(data.sessionDuration);
       }
     }
   }, []);
 
+  // Update session duration every minute
   useEffect(() => {
-    // Update session duration every minute
     const interval = setInterval(() => {
       const now = new Date();
       const durationInMinutes = Math.floor((now.getTime() - sessionStartTime.getTime()) / 60000);
-      setSessionDuration(durationInMinutes);
+      // We don't update sessionDuration here anymore as it's fixed from session prep
     }, 60000);
 
     return () => clearInterval(interval);
   }, [sessionStartTime]);
 
-  // Add a note from session planning if exists
+  // Add a pre-session note if there are notes from session planning
   useEffect(() => {
     if (sessionNotes && sessionNotes.trim() !== "") {
+      // Create a pre-session note type if it doesn't exist
+      const preSessionNoteType = noteTypes.find(t => t.name === "Notatka z planowania") || 
+        {
+          id: "pre-session",
+          name: "Notatka z planowania",
+          color: "#9B59B6", // Purple color for pre-session notes
+          description: "Notatki przygotowane przed sesją"
+        };
+
       // Create a note from session planning notes
       const planningNote: Note = {
         id: uuidv4(),
-        content: `Notatki z planowania sesji: ${sessionNotes}`,
-        type: noteTypes.find(t => t.name === "Spostrzeżenie terapeuty") || noteTypes[0],
+        content: sessionNotes,
+        type: preSessionNoteType,
         timestamp: new Date(sessionStartTime.getTime() - 3600000), // 1 hour before session
         createdAt: new Date(sessionStartTime.getTime() - 3600000),
         updatedAt: new Date(sessionStartTime.getTime() - 3600000),
       };
       setNotes(prev => [planningNote, ...prev]);
     }
-  }, [sessionNotes]);
+  }, [sessionNotes, sessionStartTime]);
 
   const addNote = (content: string, type: NoteType) => {
     const newNote: Note = {
@@ -104,10 +114,11 @@ export default function DemoSession() {
   };
 
   const handleDrawingSave = (imageData: string) => {
+    // Use the selected drawing type when saving the drawing
     const drawingNote: Note = {
       id: uuidv4(),
       content: imageData,
-      type: selectedDrawingType,
+      type: selectedDrawingType, // This will now properly use the selected type
       timestamp: new Date(),
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -190,38 +201,63 @@ export default function DemoSession() {
     }
   };
 
+  // Format session duration in Polish
+  const formatSessionDuration = (minutes: number) => {
+    if (minutes === 0) return "Rozpoczęta przed chwilą";
+    
+    if (minutes === 1) return "1 minuta";
+    if (minutes < 5) return `${minutes} minuty`;
+    return `${minutes} minut`;
+  };
+
   return (
     <div className="min-h-screen flex flex-col pb-6">
       <NavBar />
       
       <main className="flex-grow max-w-4xl mx-auto px-4 md:px-6 pt-4 pb-20">
-        {/* Session Header */}
-        <Card className="mb-6 p-4 flex justify-between items-center">
-          <div className="flex items-center gap-3">
-            <Button asChild size="icon" variant="ghost">
-              <Link href="/demo/session/prep">
-                <ChevronLeft size={18} />
-              </Link>
-            </Button>
-            <div>
-              <h1 className="text-xl font-semibold">Sesja demonstracyjna</h1>
-              <div className="flex items-center gap-2 text-sm text-gray-500">
-                <Clock size={14} />
-                <span>{formatSessionDuration(sessionDuration)}</span>
+        {/* Session Header with MinimalTimeline integrated */}
+        <Card className="mb-6">
+          <div className="p-4 flex justify-between items-center border-b">
+            <div className="flex items-center gap-3">
+              <Button asChild size="icon" variant="ghost">
+                <Link href="/demo/session/prep">
+                  <ChevronLeft size={18} />
+                </Link>
+              </Button>
+              <div>
+                <h1 className="text-xl font-semibold">Sesja demonstracyjna</h1>
+                <div className="flex items-center gap-2 text-sm text-gray-500">
+                  <Clock size={14} />
+                  <span>Zaplanowana na {sessionDuration} minut</span>
+                </div>
               </div>
             </div>
-          </div>
-          <div className="flex items-center gap-2">
-            <Button 
-              variant="outline" 
-              size="sm" 
-              onClick={() => setShowMinimalTimeline(!showMinimalTimeline)}
-            >
-              {showMinimalTimeline ? "Ukryj oś czasu" : "Pokaż oś czasu"}
-            </Button>
-            <Button size="icon" variant="ghost">
+            <Button variant="outline" size="icon">
               <MoreHorizontal size={18} />
             </Button>
+          </div>
+          
+          {/* Integrated MinimalTimeline */}
+          <div className="px-4 py-3">
+            {showMinimalTimeline ? (
+              <MinimalTimeline 
+                notes={notes.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime())} 
+                visible={showMinimalTimeline}
+                onToggleVisibility={() => setShowMinimalTimeline(!showMinimalTimeline)}
+                onNoteClick={handleNoteClick}
+                sessionDuration={sessionDuration}
+                sessionStartTime={sessionStartTime}
+              />
+            ) : (
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={() => setShowMinimalTimeline(true)}
+              >
+                <Eye size={16} className="mr-2" />
+                <span>Pokaż oś czasu</span>
+              </Button>
+            )}
           </div>
         </Card>
         
@@ -239,28 +275,20 @@ export default function DemoSession() {
           </Card>
         )}
         
-        {/* Mini Timeline */}
-        {showMinimalTimeline && (
-          <MinimalTimeline 
-            notes={notes.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime())} 
-            visible={showMinimalTimeline}
-            onToggleVisibility={() => setShowMinimalTimeline(!showMinimalTimeline)}
-            onNoteClick={handleNoteClick}
-          />
-        )}
-        
         {/* Tabs Interface */}
         <SessionTabs 
           notes={notes.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime())}
           onAddNote={addNote}
           onDeleteNote={deleteNote}
           onToggleDrawing={() => {
-            // Use the currently selected note type when toggling drawing mode
-            const currentNoteTypeInput = document.querySelector('[data-note-type-selector]') as HTMLElement;
-            if (currentNoteTypeInput) {
-              const selectedType = noteTypes.find(t => t.id === currentNoteTypeInput.dataset.noteTypeId);
-              if (selectedType) {
-                setSelectedDrawingType(selectedType);
+            // Save the currently selected note type when toggling drawing mode
+            const selectedNoteTypeButton = document.querySelector('[data-note-type-id]') as HTMLButtonElement;
+            if (selectedNoteTypeButton) {
+              const typeId = selectedNoteTypeButton.getAttribute('data-note-type-id');
+              const type = noteTypes.find(t => t.id === typeId);
+              if (type) {
+                setSelectedDrawingType(type);
+                console.log(`Selected type for drawing: ${type.name}`);
               }
             }
             setIsDrawingMode(true);

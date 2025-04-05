@@ -1,4 +1,3 @@
-
 "use client";
 
 import { Note, NoteType } from "@/types";
@@ -18,15 +17,26 @@ export const NotesTab = ({
   onDeleteNote, 
   onToggleDrawing 
 }: NotesTabProps) => {
+  // Ensure pre-session notes appear first in timeline
+  const sortedNotes = [...notes].sort((a, b) => {
+    // Prioritize pre-session notes
+    if (a.type.name === "Notatka z planowania") return -1;
+    if (b.type.name === "Notatka z planowania") return 1;
+    
+    // Otherwise sort by timestamp (newest first)
+    return b.timestamp.getTime() - a.timestamp.getTime();
+  });
+
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
       <Notepad 
         onAddNote={onAddNote} 
         onToggleDrawing={onToggleDrawing} 
       />
       <Timeline 
-        notes={notes} 
-        onDeleteNote={onDeleteNote} 
+        notes={sortedNotes} 
+        onDeleteNote={onDeleteNote}
+        title="Oś czasu sesji"
       />
     </div>
   );
