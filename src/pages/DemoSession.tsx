@@ -1,8 +1,8 @@
+
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { useRouter } from "next/navigation";
-import Link from "next/link";
+import { useNavigate, Link } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
 import { Note, NoteType } from "@/types";
 import { mockNotes, noteTypes } from "@/data/mockData";
@@ -25,7 +25,7 @@ import { BreathingExercise } from "@/components/exercises/BreathingExercise";
 import { ReflectionPrompt } from "@/components/exercises/ReflectionPrompt";
 
 export default function DemoSession() {
-  const router = useRouter();
+  const navigate = useNavigate();
   const [notes, setNotes] = useState<Note[]>(mockNotes);
   const [isDrawingMode, setIsDrawingMode] = useState(false);
   const [sessionStartTime] = useState(new Date());
@@ -69,13 +69,20 @@ export default function DemoSession() {
   useEffect(() => {
     if (sessionNotes && sessionNotes.trim() !== "") {
       // Create a pre-session note type if it doesn't exist
-      const preSessionNoteType = noteTypes.find(t => t.name === "Notatka z planowania") || 
-        {
+      let preSessionNoteType: NoteType;
+      const existingType = noteTypes.find(t => t.name === "Notatka z planowania");
+      
+      if (existingType) {
+        preSessionNoteType = existingType;
+      } else {
+        preSessionNoteType = {
           id: "pre-session",
           name: "Notatka z planowania",
           color: "#9B59B6", // Purple color for pre-session notes
-          description: "Notatki przygotowane przed sesją"
+          description: "Notatki przygotowane przed sesją",
+          visible: true // Add the required visible property
         };
+      }
 
       // Create a note from session planning notes
       const planningNote: Note = {
@@ -221,7 +228,7 @@ export default function DemoSession() {
           <div className="p-4 flex justify-between items-center border-b">
             <div className="flex items-center gap-3">
               <Button asChild size="icon" variant="ghost">
-                <Link href="/demo/session/prep">
+                <Link to="/demo/session/prep">
                   <ChevronLeft size={18} />
                 </Link>
               </Button>
