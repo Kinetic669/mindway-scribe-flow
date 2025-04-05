@@ -1,8 +1,8 @@
+
 "use client";
 
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 import { v4 as uuidv4 } from "uuid";
 import { Note, NoteType } from "@/types";
 import { mockNotes, noteTypes } from "@/data/mockData";
@@ -137,7 +137,26 @@ export default function DemoSession() {
 
   const handleAssignExercise = (exerciseType: string) => {
     setActiveExercise(exerciseType);
-    toast.success(`Ćwiczenie wybrane: ${exerciseType}`);
+    
+    // Create an exercise note
+    const exerciseNoteType = noteTypes.find(t => t.name === "Ćwiczenie") || {
+      id: "exercise",
+      name: "Ćwiczenie",
+      color: "#8e44ad", // Purple color for exercises
+      visible: true
+    };
+    
+    const exerciseNote: Note = {
+      id: uuidv4(),
+      content: `Rozpoczęto ćwiczenie: ${exerciseType}`,
+      type: exerciseNoteType,
+      timestamp: new Date(),
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+    
+    setNotes(prev => [exerciseNote, ...prev]);
+    toast(`Ćwiczenie wybrane: ${exerciseType}`);
   };
 
   const handleDrawingSave = (imageData: string) => {
@@ -145,7 +164,12 @@ export default function DemoSession() {
     const drawingType = noteTypes.find(t => 
       t.name === "Rysunek" || 
       t.name.toLowerCase().includes("rysun")
-    ) || selectedDrawingType;
+    ) || {
+      id: "drawing",
+      name: "Rysunek",
+      color: "#3498db", // Blue color for drawings
+      visible: true
+    };
 
     const drawingNote: Note = {
       id: uuidv4(),
@@ -158,7 +182,7 @@ export default function DemoSession() {
 
     setNotes(prev => [drawingNote, ...prev]);
     setIsDrawingMode(false);
-    toast(`Rysunek dodany jako ${drawingType.name}`);
+    toast(`Rysunek dodany do notatek`);
   };
 
   const handleEmotionWheelSave = (data: { emotion: string; intensity: number; notes: string }) => {
@@ -251,16 +275,16 @@ export default function DemoSession() {
         {/* Session Header with MinimalTimeline integrated */}
         <Card className="mb-6">
           <div className="p-4 flex justify-between items-center border-b">
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-4">
               <SessionTimer 
                 sessionDuration={sessionDuration} 
                 sessionStartTime={sessionStartTime}
               />
               <div>
-                <h1 className="text-xl font-semibold">Sesja demonstracyjna</h1>
+                <h1 className="text-xl font-semibold">Sesja z Janem Kowalskim</h1>
                 <div className="flex items-center gap-2 text-sm text-gray-500">
                   <Clock size={14} />
-                  <span>Zaplanowana na {sessionDuration} minut</span>
+                  <span>{sessionDuration} min</span>
                 </div>
               </div>
             </div>
@@ -331,6 +355,10 @@ export default function DemoSession() {
                 setSelectedDrawingType(type);
                 console.log(`Selected type for drawing: ${type.name}`);
               }
+            } else {
+              // If no type is selected, use the drawing type
+              const drawingType = noteTypes.find(t => t.name === "Rysunek") || noteTypes[0];
+              setSelectedDrawingType(drawingType);
             }
             setIsDrawingMode(true);
           }}

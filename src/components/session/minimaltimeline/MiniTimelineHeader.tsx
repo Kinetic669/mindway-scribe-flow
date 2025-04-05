@@ -16,8 +16,7 @@ export const MiniTimelineHeader = ({
   onTimeFormatChange
 }: MiniTimelineHeaderProps) => {
   return (
-    <div className="flex justify-between items-center mb-2">
-      <h3 className="text-sm font-medium">Oś czasu sesji</h3>
+    <div className="flex justify-end items-center mb-2">
       <div className="flex items-center gap-2">
         <Button 
           variant="ghost" 

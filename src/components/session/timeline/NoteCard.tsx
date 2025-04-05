@@ -40,18 +40,14 @@ export const NoteCard = ({
       case "zadanie": return <CheckSquare size={16} />;
       case "refleksja": return <Brain size={16} />;
       case "rysunek": return <Pencil size={16} />;
-      case "ćwiczenie": return <CheckSquare size={16} />;
+      case "ćwiczenie": return <Brain size={16} />;
+      case "notatka z planowania": return <Calendar size={16} />;
       default: return <MessageSquare size={16} />;
     }
   };
 
   const isPlanningNote = (note: Note) => {
-    // Determine if a note was created during planning
-    // This is a mock - in a real app we'd have a proper flag
-    const currentTime = new Date();
-    const diff = currentTime.getTime() - note.createdAt.getTime();
-    const hoursDiff = diff / (1000 * 60 * 60);
-    return hoursDiff > 1 || note.type.name.toLowerCase().includes("planowanie"); // If created more than an hour ago or has planning in the name
+    return note.type.name.toLowerCase().includes("planowanie");
   };
 
   const formatTime = (date: Date) => {
@@ -65,7 +61,7 @@ export const NoteCard = ({
         style={{ backgroundColor: note.type.color }}
       />
       
-      <div className="ml-2">
+      <div className="ml-1">
         <div className="flex items-center justify-between text-sm text-gray-500 mb-1">
           <div className="flex items-center gap-2">
             <span 

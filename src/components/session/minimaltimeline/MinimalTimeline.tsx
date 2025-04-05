@@ -35,7 +35,7 @@ export const MinimalTimeline = ({
         onClick={onToggleVisibility}
       >
         <Eye size={16} className="mr-2" />
-        <span>Pokaż mini oś czasu</span>
+        <span>Pokaż oś czasu</span>
       </Button>
     );
   }
@@ -97,9 +97,9 @@ export const MinimalTimeline = ({
       />
       
       <div className="overflow-x-auto">
-        <div className="flex items-center gap-1 overflow-x-auto py-3 px-1 no-scrollbar">
+        <div className="flex items-center overflow-x-auto py-3 px-1 no-scrollbar">
           {sortedTimes.map(time => (
-            <div key={time} className="flex flex-col items-center min-w-6">
+            <div key={time} className="flex flex-col items-center min-w-6 mx-0.5">
               {/* Time label */}
               <div className="flex flex-col items-center space-y-1.5">
                 {groupedNotes[time].map(note => (

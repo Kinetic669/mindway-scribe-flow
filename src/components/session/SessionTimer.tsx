@@ -46,24 +46,24 @@ export const SessionTimer = ({ sessionDuration, sessionStartTime }: SessionTimer
   };
 
   // Calculate stroke dash array and offset for circle progress
-  const radius = 20;
+  const radius = 22;
   const circumference = 2 * Math.PI * radius;
   const strokeDashoffset = circumference - (progress / 100) * circumference;
   
   return (
-    <div className="relative flex items-center justify-center w-12 h-12">
-      <svg className="w-12 h-12 transform -rotate-90" viewBox="0 0 50 50">
+    <div className="relative flex items-center justify-center w-18 h-18">
+      <svg className="w-18 h-18 transform -rotate-90" viewBox="0 0 60 60">
         <circle
-          cx="25"
-          cy="25"
+          cx="30"
+          cy="30"
           r={radius}
           fill="transparent"
           stroke="#e6e6e6"
           strokeWidth="3"
         />
         <circle
-          cx="25"
-          cy="25"
+          cx="30"
+          cy="30"
           r={radius}
           fill="transparent"
           stroke="currentColor"
@@ -74,7 +74,7 @@ export const SessionTimer = ({ sessionDuration, sessionStartTime }: SessionTimer
           strokeLinecap="round"
         />
       </svg>
-      <div className={`absolute inset-0 flex items-center justify-center text-sm font-medium ${getTimerColor()}`}>
+      <div className={`absolute inset-0 flex items-center justify-center text-md font-medium ${getTimerColor()}`}>
         {formatTime(timeLeft)}
       </div>
     </div>

@@ -11,12 +11,17 @@ type NotepadActionsProps = {
 };
 
 export const NotepadActions = ({ selectedType, onToggleDrawing }: NotepadActionsProps) => {
+  const handleToggleDrawing = () => {
+    // No toast notification here
+    onToggleDrawing();
+  };
+
   return (
     <div className="flex gap-2">
       <Button 
         variant="outline" 
         size="sm"
-        onClick={onToggleDrawing}
+        onClick={handleToggleDrawing}
         style={{ 
           borderColor: `${selectedType.color}40`,
           color: selectedType.color
