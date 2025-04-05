@@ -13,8 +13,8 @@ type MinimalTimelineProps = {
   visible: boolean;
   onToggleVisibility: () => void;
   onNoteClick: (noteId: string) => void;
-  sessionDuration: number;  // Added prop
-  sessionStartTime: Date;   // Added prop
+  sessionDuration: number;
+  sessionStartTime: Date;
 };
 
 export const MinimalTimeline = ({ 

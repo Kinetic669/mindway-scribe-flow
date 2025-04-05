@@ -1,11 +1,9 @@
 
 "use client";
 
-import { Note } from "@/types";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { EyeOff, Clock, Calendar } from "lucide-react";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { SessionTimer } from "../SessionTimer";
 
 type MiniTimelineHeaderProps = {

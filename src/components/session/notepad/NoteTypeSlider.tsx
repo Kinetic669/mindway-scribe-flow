@@ -5,7 +5,7 @@ import { useState, useRef, useEffect } from "react";
 import { NoteType } from "@/types";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight, MessageSquare, Lightbulb, Eye, CheckSquare, Brain, Sparkles } from "lucide-react";
-import { toast } from "sonner";
+import { toast } from "react-toastify";
 
 type NoteTypeSelectorProps = {
   noteTypes: NoteType[];
@@ -102,7 +102,7 @@ export const NoteTypeSlider = ({
             data-note-type-id={type.id}
             onClick={() => {
               onTypeChange(type);
-              toast.success(`Typ notatki: ${type.name}`);
+              toast(`Typ notatki: ${type.name}`);
             }}
           >
             {getIconForType(type.name)}

@@ -1,6 +1,6 @@
 
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
@@ -22,8 +22,7 @@ export default function RootLayout({
     <html lang="pl">
       <body className={inter.className}>
         <TooltipProvider>
-          <Toaster />
-          <Sonner />
+          <ToastContainer position="top-right" autoClose={3000} hideProgressBar={false} />
           {children}
         </TooltipProvider>
       </body>

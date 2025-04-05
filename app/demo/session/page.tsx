@@ -15,10 +15,12 @@ import { MinimalTimeline } from "@/components/session/minimaltimeline/MinimalTim
 import { 
   ChevronLeft, 
   Clock, 
-  MoreHorizontal
+  MoreHorizontal,
+  Eye
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
-import { toast } from "sonner";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import { EmotionWheel } from "@/components/exercises/EmotionWheel";
 import { BreathingExercise } from "@/components/exercises/BreathingExercise";
 import { ReflectionPrompt } from "@/components/exercises/ReflectionPrompt";
