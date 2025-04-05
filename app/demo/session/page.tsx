@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect, useRef } from "react";
@@ -12,8 +11,8 @@ import { NavBar } from "@/components/NavBar";
 import { Button } from "@/components/ui/button";
 import { SessionTabs } from "@/components/session/SessionTabs";
 import { MinimalTimeline } from "@/components/session/minimaltimeline/MinimalTimeline";
+import { SessionTimer } from "@/components/session/SessionTimer";
 import { 
-  ChevronLeft, 
   Clock, 
   MoreHorizontal,
   Eye
@@ -24,6 +23,22 @@ import "react-toastify/dist/ReactToastify.css";
 import { EmotionWheel } from "@/components/exercises/EmotionWheel";
 import { BreathingExercise } from "@/components/exercises/BreathingExercise";
 import { ReflectionPrompt } from "@/components/exercises/ReflectionPrompt";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export default function DemoSession() {
   const router = useRouter();
@@ -36,8 +51,12 @@ export default function DemoSession() {
   const [plannedExercises, setPlannedExercises] = useState<string[]>([]);
   const [sessionGoals, setSessionGoals] = useState<string[]>([]);
   const [sessionNotes, setSessionNotes] = useState<string>("");
+  const [showEndSessionDialog, setShowEndSessionDialog] = useState(false);
   const [selectedDrawingType, setSelectedDrawingType] = useState<NoteType>(
-    noteTypes.find(t => t.name === "Spostrzeżenie terapeuty") || noteTypes[0]
+    noteTypes.find(t => t.name === "Rysunek") || 
+    noteTypes.find(t => t.name.toLowerCase().includes("rysun")) || 
+    noteTypes.find(t => t.name === "Spostrzeżenie terapeuty") || 
+    noteTypes[0]
   );
   const timelineRef = useRef<HTMLDivElement>(null);
 
@@ -70,13 +89,19 @@ export default function DemoSession() {
   useEffect(() => {
     if (sessionNotes && sessionNotes.trim() !== "") {
       // Create a pre-session note type if it doesn't exist
-      const preSessionNoteType = noteTypes.find(t => t.name === "Notatka z planowania") || 
-        {
+      let preSessionNoteType: NoteType;
+      const existingType = noteTypes.find(t => t.name === "Notatka z planowania");
+      
+      if (existingType) {
+        preSessionNoteType = existingType;
+      } else {
+        preSessionNoteType = {
           id: "pre-session",
           name: "Notatka z planowania",
           color: "#9B59B6", // Purple color for pre-session notes
-          description: "Notatki przygotowane przed sesją"
+          visible: true
         };
+      }
 
       // Create a note from session planning notes
       const planningNote: Note = {
@@ -116,11 +141,16 @@ export default function DemoSession() {
   };
 
   const handleDrawingSave = (imageData: string) => {
-    // Use the selected drawing type when saving the drawing
+    // Use the drawing note type
+    const drawingType = noteTypes.find(t => 
+      t.name === "Rysunek" || 
+      t.name.toLowerCase().includes("rysun")
+    ) || selectedDrawingType;
+
     const drawingNote: Note = {
       id: uuidv4(),
       content: imageData,
-      type: selectedDrawingType, // This will now properly use the selected type
+      type: drawingType,
       timestamp: new Date(),
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -128,7 +158,7 @@ export default function DemoSession() {
 
     setNotes(prev => [drawingNote, ...prev]);
     setIsDrawingMode(false);
-    toast.success(`Rysunek dodany jako ${selectedDrawingType.name}`);
+    toast(`Rysunek dodany jako ${drawingType.name}`);
   };
 
   const handleEmotionWheelSave = (data: { emotion: string; intensity: number; notes: string }) => {
@@ -143,7 +173,7 @@ export default function DemoSession() {
 
     setNotes(prev => [emotionNote, ...prev]);
     setActiveExercise(null);
-    toast.success("Wyniki koła emocji dodane do osi czasu");
+    toast("Wyniki koła emocji dodane do osi czasu");
   };
 
   const handleBreathingExerciseSave = (data: { completed: boolean; duration: number }) => {
@@ -164,7 +194,7 @@ export default function DemoSession() {
 
     setNotes(prev => [breathingNote, ...prev]);
     setActiveExercise(null);
-    toast.success("Wyniki ćwiczenia oddechowego dodane do osi czasu");
+    toast("Wyniki ćwiczenia oddechowego dodane do osi czasu");
   };
 
   const handleReflectionSave = (data: { responses: Record<string, string> }) => {
@@ -183,7 +213,7 @@ export default function DemoSession() {
 
     setNotes(prev => [reflectionNote, ...prev]);
     setActiveExercise(null);
-    toast.success("Refleksje dodane do osi czasu");
+    toast("Refleksje dodane do osi czasu");
   };
 
   const handleNoteClick = (noteId: string) => {
@@ -195,21 +225,22 @@ export default function DemoSession() {
     const timelineElement = document.getElementById(`note-${noteId}`);
     if (timelineElement) {
       timelineElement.scrollIntoView({ behavior: 'smooth' });
-      // Add highlight effect
-      timelineElement.classList.add('bg-yellow-50');
+      // Add highlight effect matching note color
+      timelineElement.style.backgroundColor = `${note.type.color}15`; // Very light version of the color
       setTimeout(() => {
-        timelineElement.classList.remove('bg-yellow-50');
+        timelineElement.style.backgroundColor = '';
       }, 2000);
     }
   };
 
-  // Format session duration in Polish
-  const formatSessionDuration = (minutes: number) => {
-    if (minutes === 0) return "Rozpoczęta przed chwilą";
-    
-    if (minutes === 1) return "1 minuta";
-    if (minutes < 5) return `${minutes} minuty`;
-    return `${minutes} minut`;
+  const handleEndSession = () => {
+    setShowEndSessionDialog(true);
+  };
+
+  const confirmEndSession = () => {
+    // In a real app, save session data, etc.
+    toast("Sesja została zakończona");
+    router.push('/'); // Navigate to home page or summary page
   };
 
   return (
@@ -221,11 +252,10 @@ export default function DemoSession() {
         <Card className="mb-6">
           <div className="p-4 flex justify-between items-center border-b">
             <div className="flex items-center gap-3">
-              <Button asChild size="icon" variant="ghost">
-                <Link href="/demo/session/prep">
-                  <ChevronLeft size={18} />
-                </Link>
-              </Button>
+              <SessionTimer 
+                sessionDuration={sessionDuration} 
+                sessionStartTime={sessionStartTime}
+              />
               <div>
                 <h1 className="text-xl font-semibold">Sesja demonstracyjna</h1>
                 <div className="flex items-center gap-2 text-sm text-gray-500">
@@ -234,9 +264,18 @@ export default function DemoSession() {
                 </div>
               </div>
             </div>
-            <Button variant="outline" size="icon">
-              <MoreHorizontal size={18} />
-            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="icon">
+                  <MoreHorizontal size={18} />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={handleEndSession} className="text-red-500 focus:text-red-500">
+                  Zakończ sesję
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
           
           {/* Integrated MinimalTimeline */}
@@ -329,15 +368,24 @@ export default function DemoSession() {
           onSave={handleReflectionSave}
         />
       )}
+
+      {/* End Session Dialog */}
+      <AlertDialog open={showEndSessionDialog} onOpenChange={setShowEndSessionDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Zakończyć sesję?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Czy na pewno chcesz zakończyć sesję? Wszystkie nieopublikowane notatki zostaną zapisane.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Anuluj</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmEndSession}>
+              Zakończ sesję
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
-}
-
-// Format session duration in Polish
-function formatSessionDuration(minutes: number) {
-  if (minutes === 0) return "Rozpoczęta przed chwilą";
-  
-  if (minutes === 1) return "1 minuta";
-  if (minutes < 5) return `${minutes} minuty`;
-  return `${minutes} minut`;
 }

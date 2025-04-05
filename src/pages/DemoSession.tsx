@@ -2,7 +2,8 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
 import { Note, NoteType } from "@/types";
 import { mockNotes, noteTypes } from "@/data/mockData";
@@ -15,8 +16,7 @@ import { SessionTimer } from "@/components/session/SessionTimer";
 import { 
   Clock, 
   MoreHorizontal,
-  Eye,
-  X
+  Eye
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { toast } from "react-toastify";
@@ -54,7 +54,10 @@ export default function DemoSession() {
   const [sessionNotes, setSessionNotes] = useState<string>("");
   const [showEndSessionDialog, setShowEndSessionDialog] = useState(false);
   const [selectedDrawingType, setSelectedDrawingType] = useState<NoteType>(
-    noteTypes.find(t => t.name === "Spostrzeżenie terapeuty") || noteTypes[0]
+    noteTypes.find(t => t.name === "Rysunek") || 
+    noteTypes.find(t => t.name.toLowerCase().includes("rysun")) || 
+    noteTypes.find(t => t.name === "Spostrzeżenie terapeuty") || 
+    noteTypes[0]
   );
   const timelineRef = useRef<HTMLDivElement>(null);
 
@@ -97,7 +100,7 @@ export default function DemoSession() {
           id: "pre-session",
           name: "Notatka z planowania",
           color: "#9B59B6", // Purple color for pre-session notes
-          visible: true // Add the required visible property
+          visible: true
         };
       }
 
@@ -141,11 +144,16 @@ export default function DemoSession() {
   };
 
   const handleDrawingSave = (imageData: string) => {
-    // Use the selected drawing type when saving the drawing
+    // Use the drawing note type
+    const drawingType = noteTypes.find(t => 
+      t.name === "Rysunek" || 
+      t.name.toLowerCase().includes("rysun")
+    ) || selectedDrawingType;
+
     const drawingNote: Note = {
       id: uuidv4(),
       content: imageData,
-      type: selectedDrawingType,
+      type: drawingType,
       timestamp: new Date(),
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -153,7 +161,7 @@ export default function DemoSession() {
 
     setNotes(prev => [drawingNote, ...prev]);
     setIsDrawingMode(false);
-    toast(`Rysunek dodany jako ${selectedDrawingType.name}`);
+    toast(`Rysunek dodany jako ${drawingType.name}`);
   };
 
   const handleEmotionWheelSave = (data: { emotion: string; intensity: number; notes: string }) => {
@@ -246,13 +254,17 @@ export default function DemoSession() {
         {/* Session Header with MinimalTimeline integrated */}
         <Card className="mb-6">
           <div className="p-4 flex justify-between items-center border-b">
-            <div>
-              <h1 className="text-xl font-semibold">Sesja demonstracyjna</h1>
-              <div className="flex items-center gap-2 text-sm text-gray-500">
-                <SessionTimer 
-                  sessionDuration={sessionDuration} 
-                  sessionStartTime={sessionStartTime}
-                />
+            <div className="flex items-center gap-3">
+              <SessionTimer 
+                sessionDuration={sessionDuration} 
+                sessionStartTime={sessionStartTime}
+              />
+              <div>
+                <h1 className="text-xl font-semibold">Sesja demonstracyjna</h1>
+                <div className="flex items-center gap-2 text-sm text-gray-500">
+                  <Clock size={14} />
+                  <span>Zaplanowana na {sessionDuration} minut</span>
+                </div>
               </div>
             </div>
             <DropdownMenu>
@@ -379,13 +391,4 @@ export default function DemoSession() {
       </AlertDialog>
     </div>
   );
-}
-
-// Format session duration in Polish
-function formatSessionDuration(minutes: number) {
-  if (minutes === 0) return "Rozpoczęta przed chwilą";
-  
-  if (minutes === 1) return "1 minuta";
-  if (minutes < 5) return `${minutes} minuty`;
-  return `${minutes} minut`;
 }

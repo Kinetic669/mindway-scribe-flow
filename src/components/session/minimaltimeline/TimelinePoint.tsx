@@ -21,11 +21,10 @@ type TimelinePointProps = {
 };
 
 export const TimelinePoint = ({ note, showMinutes, timeKey, onNoteClick }: TimelinePointProps) => {
-  const isImage = note.content.includes("data:image");
+  const isDrawing = note.content.startsWith("data:image");
   const isExercise = note.type.name.toLowerCase().includes("ćwiczenie") || 
                     note.type.name.toLowerCase().includes("zadanie");
   const isPlanning = note.type.name.toLowerCase().includes("planowanie");
-  const isDrawing = isImage;
   
   // Get icon based on note type
   const getIcon = () => {
@@ -48,11 +47,11 @@ export const TimelinePoint = ({ note, showMinutes, timeKey, onNoteClick }: Timel
         <TooltipTrigger asChild>
           <div 
             style={{ 
-              backgroundColor: isExercise || isPlanning ? 'transparent' : note.type.color,
+              backgroundColor: (isExercise || isPlanning || isDrawing) ? 'transparent' : note.type.color,
               borderColor: note.type.color,
             }}
             className={cn(
-              "w-5 h-5 rounded-full flex-shrink-0 transform transition-transform duration-200 hover:scale-125 flex items-center justify-center overflow-visible",
+              "w-5 h-5 rounded-full flex-shrink-0 transform transition-transform duration-200 hover:scale-125 flex items-center justify-center",
               (isExercise || isPlanning || isDrawing) ? "border-2" : "",
               "cursor-pointer"
             )}
@@ -70,7 +69,7 @@ export const TimelinePoint = ({ note, showMinutes, timeKey, onNoteClick }: Timel
             {showMinutes ? `Minuta sesji: ${timeKey}` : `Czas: ${timeKey}`}
           </p>
           <p>Typ: {note.type.name}</p>
-          {isImage ? 
+          {isDrawing ? 
             <p>Rysunek</p> : 
             note.content.length > 30 ? `${note.content.substring(0, 30)}...` : note.content
           }

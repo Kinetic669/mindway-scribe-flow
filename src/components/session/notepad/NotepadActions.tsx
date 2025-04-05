@@ -2,7 +2,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Pencil, Clock, Plus } from "lucide-react";
+import { Pencil } from "lucide-react";
 import { NoteType } from "@/types";
 
 type NotepadActionsProps = {
@@ -23,14 +23,6 @@ export const NotepadActions = ({ selectedType, onToggleDrawing }: NotepadActions
         }}
       >
         <Pencil size={14} className="mr-1" /> Rysuj
-      </Button>
-      
-      <Button variant="outline" size="sm">
-        <Clock size={14} className="mr-1" /> {new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-      </Button>
-
-      <Button variant="outline" size="sm" className="ml-auto">
-        <Plus size={14} className="mr-1" /> Dodaj
       </Button>
     </div>
   );

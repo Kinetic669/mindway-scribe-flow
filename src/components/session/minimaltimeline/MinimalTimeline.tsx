@@ -94,16 +94,14 @@ export const MinimalTimeline = ({
         onToggleVisibility={onToggleVisibility}
         showTimeFormat={showMinutes}
         onTimeFormatChange={handleFormatToggle}
-        sessionStartTime={sessionStartTime}
-        sessionDuration={sessionDuration}
       />
       
       <div className="overflow-x-auto">
-        <div className="flex items-center gap-2 overflow-x-auto py-3 px-1 no-scrollbar">
+        <div className="flex items-center gap-1 overflow-x-auto py-3 px-1 no-scrollbar">
           {sortedTimes.map(time => (
-            <div key={time} className="flex flex-col items-center min-w-8">
-              {/* Time label omitted as requested */}
-              <div className="flex flex-col items-center space-y-2">
+            <div key={time} className="flex flex-col items-center min-w-6">
+              {/* Time label */}
+              <div className="flex flex-col items-center space-y-1.5">
                 {groupedNotes[time].map(note => (
                   <TimelinePoint 
                     key={note.id}

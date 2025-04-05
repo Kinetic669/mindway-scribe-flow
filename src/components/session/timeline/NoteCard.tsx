@@ -65,11 +65,11 @@ export const NoteCard = ({
         style={{ backgroundColor: note.type.color }}
       />
       
-      <div className="ml-4">
+      <div className="ml-2">
         <div className="flex items-center justify-between text-sm text-gray-500 mb-1">
           <div className="flex items-center gap-2">
             <span 
-              className="px-2.5 py-1 rounded-full text-xs font-medium flex items-center gap-1" 
+              className="px-3 py-1.5 rounded-full text-xs font-medium flex items-center gap-1" 
               style={{ 
                 backgroundColor: `${note.type.color}20`, 
                 color: note.type.color 
