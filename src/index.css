@@ -119,10 +119,19 @@
   }
   
   .timeline-dot {
-    @apply absolute left-0 top-1 w-3 h-3 rounded-full -translate-x-1/2 z-10;
+    @apply absolute left-0 top-2 w-3 h-3 rounded-full -translate-x-1/2 z-10;
   }
 
   .note-card {
     @apply p-4 rounded-lg border border-border bg-white shadow-sm;
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
   }
 }

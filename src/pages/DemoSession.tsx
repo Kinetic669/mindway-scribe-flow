@@ -11,11 +11,12 @@ import { NavBar } from "@/components/NavBar";
 import { Button } from "@/components/ui/button";
 import { SessionTabs } from "@/components/session/SessionTabs";
 import { MinimalTimeline } from "@/components/session/minimaltimeline/MinimalTimeline";
+import { SessionTimer } from "@/components/session/SessionTimer";
 import { 
-  ChevronLeft, 
   Clock, 
   MoreHorizontal,
-  Eye
+  Eye,
+  X
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { toast } from "react-toastify";
@@ -23,6 +24,22 @@ import "react-toastify/dist/ReactToastify.css";
 import { EmotionWheel } from "@/components/exercises/EmotionWheel";
 import { BreathingExercise } from "@/components/exercises/BreathingExercise";
 import { ReflectionPrompt } from "@/components/exercises/ReflectionPrompt";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export default function DemoSession() {
   const navigate = useNavigate();
@@ -35,6 +52,7 @@ export default function DemoSession() {
   const [plannedExercises, setPlannedExercises] = useState<string[]>([]);
   const [sessionGoals, setSessionGoals] = useState<string[]>([]);
   const [sessionNotes, setSessionNotes] = useState<string>("");
+  const [showEndSessionDialog, setShowEndSessionDialog] = useState(false);
   const [selectedDrawingType, setSelectedDrawingType] = useState<NoteType>(
     noteTypes.find(t => t.name === "Spostrzeżenie terapeuty") || noteTypes[0]
   );
@@ -79,7 +97,6 @@ export default function DemoSession() {
           id: "pre-session",
           name: "Notatka z planowania",
           color: "#9B59B6", // Purple color for pre-session notes
-          description: "Notatki przygotowane przed sesją",
           visible: true // Add the required visible property
         };
       }
@@ -97,6 +114,7 @@ export default function DemoSession() {
     }
   }, [sessionNotes, sessionStartTime]);
 
+  // Add note
   const addNote = (content: string, type: NoteType) => {
     const newNote: Note = {
       id: uuidv4(),
@@ -111,6 +129,7 @@ export default function DemoSession() {
     toast(`Notatka dodana do osi czasu`);
   };
 
+  // Delete note
   const deleteNote = (id: string) => {
     setNotes(prev => prev.filter(note => note.id !== id));
     toast(`Notatka usunięta`);
@@ -126,7 +145,7 @@ export default function DemoSession() {
     const drawingNote: Note = {
       id: uuidv4(),
       content: imageData,
-      type: selectedDrawingType, // This will now properly use the selected type
+      type: selectedDrawingType,
       timestamp: new Date(),
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -201,21 +220,22 @@ export default function DemoSession() {
     const timelineElement = document.getElementById(`note-${noteId}`);
     if (timelineElement) {
       timelineElement.scrollIntoView({ behavior: 'smooth' });
-      // Add highlight effect
-      timelineElement.classList.add('bg-yellow-50');
+      // Add highlight effect matching note color
+      timelineElement.style.backgroundColor = `${note.type.color}15`; // Very light version of the color
       setTimeout(() => {
-        timelineElement.classList.remove('bg-yellow-50');
+        timelineElement.style.backgroundColor = '';
       }, 2000);
     }
   };
 
-  // Format session duration in Polish
-  const formatSessionDuration = (minutes: number) => {
-    if (minutes === 0) return "Rozpoczęta przed chwilą";
-    
-    if (minutes === 1) return "1 minuta";
-    if (minutes < 5) return `${minutes} minuty`;
-    return `${minutes} minut`;
+  const handleEndSession = () => {
+    setShowEndSessionDialog(true);
+  };
+
+  const confirmEndSession = () => {
+    // In a real app, save session data, etc.
+    toast("Sesja została zakończona");
+    navigate('/'); // Navigate to home page or summary page
   };
 
   return (
@@ -226,23 +246,27 @@ export default function DemoSession() {
         {/* Session Header with MinimalTimeline integrated */}
         <Card className="mb-6">
           <div className="p-4 flex justify-between items-center border-b">
-            <div className="flex items-center gap-3">
-              <Button asChild size="icon" variant="ghost">
-                <Link to="/demo/session/prep">
-                  <ChevronLeft size={18} />
-                </Link>
-              </Button>
-              <div>
-                <h1 className="text-xl font-semibold">Sesja demonstracyjna</h1>
-                <div className="flex items-center gap-2 text-sm text-gray-500">
-                  <Clock size={14} />
-                  <span>Zaplanowana na {sessionDuration} minut</span>
-                </div>
+            <div>
+              <h1 className="text-xl font-semibold">Sesja demonstracyjna</h1>
+              <div className="flex items-center gap-2 text-sm text-gray-500">
+                <SessionTimer 
+                  sessionDuration={sessionDuration} 
+                  sessionStartTime={sessionStartTime}
+                />
               </div>
             </div>
-            <Button variant="outline" size="icon">
-              <MoreHorizontal size={18} />
-            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="icon">
+                  <MoreHorizontal size={18} />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={handleEndSession} className="text-red-500 focus:text-red-500">
+                  Zakończ sesję
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
           
           {/* Integrated MinimalTimeline */}
@@ -335,6 +359,24 @@ export default function DemoSession() {
           onSave={handleReflectionSave}
         />
       )}
+
+      {/* End Session Dialog */}
+      <AlertDialog open={showEndSessionDialog} onOpenChange={setShowEndSessionDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Zakończyć sesję?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Czy na pewno chcesz zakończyć sesję? Wszystkie nieopublikowane notatki zostaną zapisane.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Anuluj</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmEndSession}>
+              Zakończ sesję
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

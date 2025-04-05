@@ -51,7 +51,7 @@ export const NoteCard = ({
     const currentTime = new Date();
     const diff = currentTime.getTime() - note.createdAt.getTime();
     const hoursDiff = diff / (1000 * 60 * 60);
-    return hoursDiff > 1; // If created more than an hour ago, consider it a planning note
+    return hoursDiff > 1 || note.type.name.toLowerCase().includes("planowanie"); // If created more than an hour ago or has planning in the name
   };
 
   const formatTime = (date: Date) => {
@@ -69,7 +69,7 @@ export const NoteCard = ({
         <div className="flex items-center justify-between text-sm text-gray-500 mb-1">
           <div className="flex items-center gap-2">
             <span 
-              className="px-2 py-0.5 rounded-full text-xs font-medium flex items-center gap-1" 
+              className="px-2.5 py-1 rounded-full text-xs font-medium flex items-center gap-1" 
               style={{ 
                 backgroundColor: `${note.type.color}20`, 
                 color: note.type.color 

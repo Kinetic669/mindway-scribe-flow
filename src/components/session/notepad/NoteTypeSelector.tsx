@@ -2,28 +2,27 @@
 "use client";
 
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { 
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { ChevronDown, MessageSquare, Lightbulb, Eye, CheckSquare, Brain, Sparkles } from "lucide-react";
 import { NoteType } from "@/types";
-import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import { 
+  MessageSquare, 
+  Lightbulb, 
+  Eye, 
+  CheckSquare, 
+  Brain, 
+  Pencil 
+} from "lucide-react";
 
 type NoteTypeSelectorProps = {
   noteTypes: NoteType[];
   selectedType: NoteType;
-  onTypeChange: (type: NoteType) => void;
+  onChange: (type: NoteType) => void;
 };
 
-export const NoteTypeSelector = ({ 
-  noteTypes, 
-  selectedType, 
-  onTypeChange 
-}: NoteTypeSelectorProps) => {
+export const NoteTypeSelector = ({ noteTypes, selectedType, onChange }: NoteTypeSelectorProps) => {
+  const [isExpanded, setIsExpanded] = useState(false);
+
   const getIconForType = (typeName: string) => {
     switch (typeName.toLowerCase()) {
       case "wypowiedź klienta": return <MessageSquare size={14} />;
@@ -31,74 +30,59 @@ export const NoteTypeSelector = ({
       case "obserwacja": return <Eye size={14} />;
       case "zadanie": return <CheckSquare size={14} />;
       case "refleksja": return <Brain size={14} />;
-      default: return <Sparkles size={14} />;
+      case "rysunek": return <Pencil size={14} />;
+      default: return <MessageSquare size={14} />;
     }
   };
 
-  // Quick type selection buttons (first 3 for quick access)
-  const quickTypeButtons = noteTypes.slice(0, 3);
+  const handleChange = (type: NoteType) => {
+    onChange(type);
+    // Don't show toast when changing note type
+  };
 
   return (
-    <div className="flex gap-2 mb-3 flex-wrap">
-      {/* Quick Type Selection */}
-      <div className="flex flex-wrap gap-1 mr-2">
-        {quickTypeButtons.map((type) => (
-          <Button
-            key={type.id}
-            variant={selectedType.id === type.id ? "default" : "outline"}
-            size="sm"
-            className="flex gap-1 items-center"
-            style={{ 
-              backgroundColor: selectedType.id === type.id ? type.color : 'transparent',
-              borderColor: type.color, 
-              color: selectedType.id === type.id ? "#fff" : type.color 
-            }}
-            onClick={() => {
-              onTypeChange(type);
-              toast.success(`Typ notatki: ${type.name}`);
-            }}
-          >
-            {getIconForType(type.name)}
-            <span className="truncate max-w-24">{type.name}</span>
-          </Button>
-        ))}
-      </div>
+    <div className="flex flex-col">
+      <div className="flex items-center gap-1 mb-2">
+        <Button 
+          type="button"
+          size="sm"
+          variant="outline"
+          className={cn(
+            "flex items-center gap-1.5 px-2 py-1 h-auto", 
+            isExpanded ? "bg-gray-100" : ""
+          )}
+          onClick={() => setIsExpanded(!isExpanded)}
+        >
+          <div 
+            className="w-2 h-2 rounded-full" 
+            style={{ backgroundColor: selectedType.color }}  
+          />
+          <span className="text-xs">{selectedType.name}</span>
+        </Button>
 
-      {/* Full Type Dropdown */}
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button
-            variant="outline"
-            size="sm"
-            className="flex gap-1 items-center"
-            data-note-type-selector
-          >
-            <span>Więcej typów</span>
-            <ChevronDown size={14} />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="start" className="w-56">
-          {noteTypes.map((type) => (
-            <DropdownMenuItem
+        <div className={`flex flex-wrap gap-1 ${isExpanded ? '' : 'hidden'}`}>
+          {noteTypes.map(type => (
+            <Button
               key={type.id}
-              onClick={() => {
-                onTypeChange(type);
-                toast.success(`Typ notatki: ${type.name}`);
-              }}
-              className="flex gap-2 items-center cursor-pointer py-2"
-            >
-              <div
-                className="w-3 h-3 rounded-full"
-                style={{ backgroundColor: type.color }}
-              />
-              <span>{type.name}</span>
-              {selectedType.id === type.id && (
-                <span className="ml-auto text-xs text-muted-foreground">Wybrano</span>
+              type="button"
+              size="sm"
+              variant="ghost"
+              data-note-type-id={type.id}
+              className={cn(
+                "flex items-center gap-1.5 px-2 py-1 h-auto",
+                selectedType.id === type.id ? "bg-gray-100" : "hover:bg-gray-50"
               )}
-            </DropdownMenuItem>
+              onClick={() => handleChange(type)}
+            >
+              <div 
+                className="w-2 h-2 rounded-full" 
+                style={{ backgroundColor: type.color }}  
+              />
+              <span className="text-xs">{type.name}</span>
+            </Button>
           ))}
-        </DropdownMenuContent>
-      </DropdownMenu>
+        </div>
+      </div>
     </div>
   );
 };

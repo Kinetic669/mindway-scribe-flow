@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Eye, EyeOff, Clock, Calendar } from "lucide-react";
 import { toast } from "react-toastify";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { MiniTimelineHeader } from "./MiniTimelineHeader";
+import { TimelinePoint } from "./TimelinePoint";
 
 type MinimalTimelineProps = {
   notes: Note[];
@@ -88,58 +90,28 @@ export const MinimalTimeline = ({
 
   return (
     <div className="bg-white shadow-sm rounded-md p-2 mb-4 w-full">
-      <div className="flex justify-between items-center mb-2">
-        <h3 className="text-sm font-medium">Mini oś czasu</h3>
-        <div className="flex items-center gap-2">
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            onClick={handleFormatToggle}
-            className="h-6 px-2 text-xs"
-          >
-            {showMinutes ? <Clock size={14} className="mr-1" /> : <Calendar size={14} className="mr-1" />}
-            {showMinutes ? "Pokaż godziny" : "Pokaż minuty sesji"}
-          </Button>
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            onClick={onToggleVisibility}
-            className="h-6 w-6 p-0"
-          >
-            <EyeOff size={14} />
-          </Button>
-        </div>
-      </div>
+      <MiniTimelineHeader
+        onToggleVisibility={onToggleVisibility}
+        showTimeFormat={showMinutes}
+        onTimeFormatChange={handleFormatToggle}
+        sessionStartTime={sessionStartTime}
+        sessionDuration={sessionDuration}
+      />
       
       <div className="overflow-x-auto">
-        <div className="flex items-center space-x-1 overflow-x-auto pb-1 no-scrollbar">
+        <div className="flex items-center gap-2 overflow-x-auto py-3 px-1 no-scrollbar">
           {sortedTimes.map(time => (
-            <div key={time} className="flex flex-col items-center">
+            <div key={time} className="flex flex-col items-center min-w-8">
               {/* Time label omitted as requested */}
-              <div className="flex flex-col items-center space-y-1">
+              <div className="flex flex-col items-center space-y-2">
                 {groupedNotes[time].map(note => (
-                  <TooltipProvider key={note.id}>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <div 
-                          style={{ 
-                            backgroundColor: note.type.color,
-                            cursor: 'pointer'
-                          }}
-                          className="w-4 h-4 rounded-full flex-shrink-0 hover:scale-125 transition-transform"
-                          onClick={() => onNoteClick(note.id)}
-                        />
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p>
-                          {showMinutes ? `Minuta sesji: ${getMinutesSinceStart(note.timestamp)}` : 
-                            `Czas: ${note.timestamp.getHours()}:${note.timestamp.getMinutes() < 10 ? '0' : ''}${note.timestamp.getMinutes()}`}
-                        </p>
-                        <p>Typ: {note.type.name}</p>
-                        {note.content.length > 30 ? `${note.content.substring(0, 30)}...` : note.content}
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
+                  <TimelinePoint 
+                    key={note.id}
+                    note={note}
+                    showMinutes={showMinutes}
+                    timeKey={time}
+                    onNoteClick={onNoteClick}
+                  />
                 ))}
               </div>
             </div>

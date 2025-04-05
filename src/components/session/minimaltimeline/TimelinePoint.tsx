@@ -3,6 +3,15 @@
 
 import { Note } from "@/types";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { 
+  MessageSquare, 
+  Brain, 
+  Pencil,
+  FileText, 
+  Eye, 
+  CheckSquare
+} from "lucide-react";
+import { cn } from "@/lib/utils";
 
 type TimelinePointProps = {
   note: Note;
@@ -13,6 +22,25 @@ type TimelinePointProps = {
 
 export const TimelinePoint = ({ note, showMinutes, timeKey, onNoteClick }: TimelinePointProps) => {
   const isImage = note.content.includes("data:image");
+  const isExercise = note.type.name.toLowerCase().includes("ćwiczenie") || 
+                    note.type.name.toLowerCase().includes("zadanie");
+  const isPlanning = note.type.name.toLowerCase().includes("planowanie");
+  const isDrawing = isImage;
+  
+  // Get icon based on note type
+  const getIcon = () => {
+    if (isDrawing) return <Pencil className="h-3 w-3" />;
+    
+    const typeName = note.type.name.toLowerCase();
+    
+    if (typeName.includes('wypowiedź')) return <MessageSquare className="h-3 w-3" />;
+    if (typeName.includes('ćwiczenie') || typeName.includes('zadanie')) return <CheckSquare className="h-3 w-3" />;
+    if (typeName.includes('refleksja')) return <Brain className="h-3 w-3" />;
+    if (typeName.includes('obserwacja')) return <Eye className="h-3 w-3" />;
+    if (typeName.includes('planowanie')) return <FileText className="h-3 w-3" />;
+    
+    return null;
+  };
 
   return (
     <TooltipProvider>
@@ -20,12 +48,22 @@ export const TimelinePoint = ({ note, showMinutes, timeKey, onNoteClick }: Timel
         <TooltipTrigger asChild>
           <div 
             style={{ 
-              backgroundColor: note.type.color,
-              cursor: 'pointer'
+              backgroundColor: isExercise || isPlanning ? 'transparent' : note.type.color,
+              borderColor: note.type.color,
             }}
-            className="w-5 h-5 rounded-full flex-shrink-0 hover:scale-125 transition-transform"
+            className={cn(
+              "w-5 h-5 rounded-full flex-shrink-0 transform transition-transform duration-200 hover:scale-125 flex items-center justify-center overflow-visible",
+              (isExercise || isPlanning || isDrawing) ? "border-2" : "",
+              "cursor-pointer"
+            )}
             onClick={() => onNoteClick(note.id)}
-          />
+          >
+            {(isExercise || isPlanning || isDrawing) && (
+              <div className="text-[10px] text-center" style={{ color: note.type.color }}>
+                {getIcon()}
+              </div>
+            )}
+          </div>
         </TooltipTrigger>
         <TooltipContent>
           <p>

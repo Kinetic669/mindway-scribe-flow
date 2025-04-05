@@ -1,7 +1,6 @@
 
 "use client";
 
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { EyeOff, Clock, Calendar } from "lucide-react";
 import { SessionTimer } from "../SessionTimer";
@@ -31,16 +30,15 @@ export const MiniTimelineHeader = ({
         />
         <Button 
           variant="ghost" 
-          size="sm" 
+          size="icon"
           onClick={onTimeFormatChange}
-          className="h-6 px-2 text-xs"
+          className="h-6 w-6 p-0"
         >
-          {showTimeFormat ? <Clock size={14} className="mr-1" /> : <Calendar size={14} className="mr-1" />}
-          {showTimeFormat ? "Pokaż godziny" : "Pokaż minuty sesji"}
+          {showTimeFormat ? <Clock size={14} /> : <Calendar size={14} />}
         </Button>
         <Button 
           variant="ghost" 
-          size="sm" 
+          size="icon" 
           onClick={onToggleVisibility}
           className="h-6 w-6 p-0"
         >

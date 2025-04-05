@@ -42,29 +42,26 @@ export const TimelineHeader = ({
       <div className="flex gap-2">
         <Button 
           variant="outline" 
-          size="sm"
+          size="icon"
           onClick={onTimeFormatChange}
-          className="flex items-center gap-1"
+          className="h-8 w-8"
         >
-          {showTimeAsMinutes ? <Calendar size={14} /> : <Clock size={14} />}
-          <span>{showTimeAsMinutes ? "Pokaż godziny" : "Pokaż minuty sesji"}</span>
+          {showTimeAsMinutes ? <Calendar size={16} /> : <Clock size={16} />}
         </Button>
 
         <Button 
           variant="outline" 
-          size="sm" 
+          size="icon" 
           onClick={onSortChange}
-          className="flex items-center gap-1"
+          className="h-8 w-8"
         >
-          {sortDirection === "desc" ? <ArrowDown size={14} /> : <ArrowUp size={14} />}
-          <span>Sortuj</span>
+          {sortDirection === "desc" ? <ArrowDown size={16} /> : <ArrowUp size={16} />}
         </Button>
         
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" size="sm" className="flex items-center gap-1">
-              <Filter size={14} />
-              <span>Filtruj</span>
+            <Button variant="outline" size="icon" className="h-8 w-8">
+              <Filter size={16} />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
