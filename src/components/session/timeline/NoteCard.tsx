@@ -56,18 +56,18 @@ export const NoteCard = ({
   const isDrawing = note.content.includes("data:image") || note.type.name.toLowerCase().includes("rysunek");
   const isExercise = note.type.name.toLowerCase().includes("ćwiczenie") || note.content.toLowerCase().includes("rozpoczęto ćwiczenie");
   const isPlanningNote = note.type.name.toLowerCase().includes("planowanie");
-  const isReflection = note.type.name.toLowerCase().includes("refleksja");
+
+  // Only these special types should show icons in the main timeline
+  const shouldShowSpecialIcon = isDrawing || isExercise || isPlanningNote;
 
   const getIconForType = (typeName: string) => {
     const lowerCaseName = typeName.toLowerCase();
     
-    // Special types
     if (isDrawing) return <Pencil size={16} />;
     if (isExercise) return <Brain size={16} />;
     if (isPlanningNote) return <Calendar size={16} />;
-    if (isReflection) return <Brain size={16} />;
     
-    // Standard types
+    // Standard types (used in the type label, not in the timeline dot)
     if (lowerCaseName.includes('wypowiedź')) return <MessageSquare size={16} />;
     if (lowerCaseName.includes('spostrzeżenie')) return <Lightbulb size={16} />;
     if (lowerCaseName.includes('obserwacja')) return <Eye size={16} />;
@@ -81,7 +81,6 @@ export const NoteCard = ({
     if (lowerCaseName.includes('zasoby')) return <Book size={16} />;
     if (lowerCaseName.includes('wzmocnienie')) return <Heart size={16} />;
     
-    // Default
     return <MessageSquare size={16} />;
   };
 
@@ -92,19 +91,21 @@ export const NoteCard = ({
   return (
     <div className="timeline-item" id={`note-${note.id}`}>
       <div 
-        className={`timeline-dot flex items-center justify-center`}
+        className="timeline-dot"
         style={{ 
-          backgroundColor: 'white',
+          backgroundColor: shouldShowSpecialIcon ? 'transparent' : note.type.color,
           borderColor: note.type.color,
-          border: '2px solid'
+          border: shouldShowSpecialIcon ? '2px solid' : 'none'
         }}
       >
-        <span style={{ color: note.type.color }}>
-          {getIconForType(note.type.name)}
-        </span>
+        {shouldShowSpecialIcon && (
+          <span style={{ color: note.type.color }}>
+            {getIconForType(note.type.name)}
+          </span>
+        )}
       </div>
       
-      <div className="ml-1">
+      <div className="ml-4">
         <div className="flex items-center justify-between text-sm text-gray-500 mb-1">
           <div className="flex items-center gap-2">
             <span 
@@ -173,7 +174,7 @@ export const NoteCard = ({
           className={`note-card relative ${expanded ? 'border-mindway-primary' : ''}`}
           onClick={() => setExpanded(!expanded)}
         >
-          {note.content.includes("data:image") ? (
+          {isDrawing ? (
             <div className="note-card-content">
               <img 
                 src={note.content} 

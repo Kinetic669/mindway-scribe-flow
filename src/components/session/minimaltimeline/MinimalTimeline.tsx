@@ -54,7 +54,6 @@ export const MinimalTimeline = ({
   notes.forEach(note => {
     // Skip duplicate exercise notes - only keep summary results
     if (note.content.includes("Rozpoczęto ćwiczenie:")) {
-      // Check if there's already a result note for this exercise
       const exerciseType = note.content.split(": ")[1];
       const hasResultNote = notes.some(n => 
         n.id !== note.id && 
@@ -64,14 +63,13 @@ export const MinimalTimeline = ({
         n.timestamp > note.timestamp
       );
       
-      // If there's a result, skip this "started exercise" note
       if (hasResultNote) return;
     }
 
     let key;
     if (showMinutes) {
       const minutes = getMinutesSinceStart(note.timestamp);
-      key = `${minutes} min`;
+      key = `${minutes}`;
     } else {
       const hour = note.timestamp.getHours();
       const minute = note.timestamp.getMinutes();
@@ -88,8 +86,8 @@ export const MinimalTimeline = ({
   // Sort times
   const sortedTimes = Object.keys(groupedNotes).sort((a, b) => {
     if (showMinutes) {
-      const minutesA = parseInt(a.split(' ')[0]);
-      const minutesB = parseInt(b.split(' ')[0]);
+      const minutesA = parseInt(a);
+      const minutesB = parseInt(b);
       return minutesA - minutesB;
     } else {
       const [hourA, minuteA] = a.split(':').map(Number);
@@ -112,11 +110,11 @@ export const MinimalTimeline = ({
       />
       
       <div className="overflow-x-auto w-full">
-        <div className="flex items-start flex-nowrap overflow-x-auto py-3 px-1 min-w-full" 
+        <div className="flex items-center flex-nowrap space-x-3 py-3 px-1 min-w-full" 
              style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
           {sortedTimes.map(time => (
-            <div key={time} className="flex flex-col items-center min-w-[50px] mx-1 flex-shrink-0">
-              <div className="text-xs text-gray-500 mb-1">{time}</div>
+            <div key={time} className="flex flex-col items-center min-w-[40px] flex-shrink-0">
+              <div className="text-xs text-gray-500 mb-1">{showMinutes ? `${time} min` : time}</div>
               <div className="flex flex-col items-center gap-1.5">
                 {groupedNotes[time].map(note => (
                   <TimelinePoint 
