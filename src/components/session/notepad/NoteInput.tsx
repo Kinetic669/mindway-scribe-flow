@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Send } from "lucide-react";
 import { NoteType } from "@/types";
 import { RichTextEditor } from "@/components/editor/RichTextEditor";
+import { useRef } from "react";
 
 type NoteInputProps = {
   noteContent: string;
@@ -20,10 +21,27 @@ export const NoteInput = ({
   onSubmit, 
   onKeyDown 
 }: NoteInputProps) => {
+  const handleSubmit = () => {
+    if (noteContent.trim() !== "") {
+      onSubmit();
+      // Reset the content after submission
+      onContentChange("");
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) {
+      e.preventDefault();
+      handleSubmit();
+      return;
+    }
+    onKeyDown(e);
+  };
+
   return (
     <div className="relative">
       <div 
-        className="absolute left-3 top-3 p-1 rounded-md z-10"
+        className="absolute left-3 top-[11px] p-1 rounded-md z-10"
         style={{ backgroundColor: `${selectedType.color}20` }}
       >
         <div 
@@ -34,8 +52,8 @@ export const NoteInput = ({
       <RichTextEditor
         content={noteContent}
         onChange={onContentChange}
+        onKeyDown={handleKeyDown}
         placeholder={`Wpisz swoje ${selectedType.name.toLowerCase()} tutaj...`}
-        className="pl-10 pr-16"
         style={{ 
           borderColor: `${selectedType.color}40`,
           outlineColor: selectedType.color, 
@@ -45,7 +63,7 @@ export const NoteInput = ({
       <Button 
         className="absolute right-3 bottom-3 z-10"
         size="sm"
-        onClick={onSubmit}
+        onClick={handleSubmit}
         disabled={noteContent.trim() === ""}
         style={{ 
           backgroundColor: selectedType.color,
