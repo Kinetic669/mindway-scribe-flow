@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useRef, useEffect } from "react";
@@ -39,9 +38,10 @@ export const Notepad = ({ onAddNote, onToggleDrawing }: NotepadProps) => {
     onAddNote(noteContent, selectedType);
     setNoteContent("");
     
-    // Re-focus textarea after submission
-    if (textareaRef.current) {
-      textareaRef.current.focus();
+    // Clear the editor content
+    const editorContent = document.querySelector('.ProseMirror');
+    if (editorContent) {
+      editorContent.innerHTML = '<p></p>';
     }
   };
 
