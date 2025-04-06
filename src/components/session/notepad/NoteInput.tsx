@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Send } from "lucide-react";
 import { NoteType } from "@/types";
 import { RichTextEditor } from "@/components/editor/RichTextEditor";
-import { useRef } from "react";
 
 type NoteInputProps = {
   noteContent: string;
@@ -41,7 +40,7 @@ export const NoteInput = ({
   return (
     <div className="relative">
       <div 
-        className="absolute left-3 top-[11px] p-1 rounded-md z-10"
+        className="absolute left-3 top-[18px] p-1 rounded-md z-10"
         style={{ backgroundColor: `${selectedType.color}20` }}
       >
         <div 

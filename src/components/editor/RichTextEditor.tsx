@@ -1,13 +1,10 @@
 "use client";
 
-import { LexicalComposer } from "@lexical/react/LexicalComposer";
-import { PlainTextPlugin } from "@lexical/react/LexicalPlainTextPlugin";
-import { ContentEditable } from "@lexical/react/LexicalContentEditable";
-import { OnChangePlugin } from '@lexical/react/LexicalOnChangePlugin';
-import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
-import { $getRoot, $createParagraphNode } from 'lexical';
+import { useEditor, EditorContent } from "@tiptap/react";
+import StarterKit from "@tiptap/starter-kit";
+import { Bold, Italic, List } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { useEffect } from "react";
 
 type RichTextEditorProps = {
   content?: string;
@@ -15,36 +12,18 @@ type RichTextEditorProps = {
   onKeyDown?: (e: React.KeyboardEvent) => void;
   placeholder?: string;
   className?: string;
-  style?: React.CSSProperties;
+  variant?: 'client-quote' | 'therapist-insight' | 'observation' | 'action-item' | 'reflection' | 'question' | 'progress-note';
 };
 
-function EditorContent({ content, onKeyDown }: { content?: string, onKeyDown?: (e: React.KeyboardEvent) => void }) {
-  const [editor] = useLexicalComposerContext();
-
-  useEffect(() => {
-    if (content === "") {
-      editor.update(() => {
-        const root = $getRoot();
-        root.clear();
-        root.append($createParagraphNode());
-      });
-    }
-  }, [content, editor]);
-
-  return (
-    <ContentEditable
-      className="min-h-[100px] w-full rounded-md border px-3 py-2 focus:outline-none focus-visible:ring-0"
-      style={{
-        whiteSpace: "pre-wrap",
-        wordBreak: "break-word",
-        paddingLeft: "2.5rem",
-        paddingRight: "4rem",
-        paddingBottom: "2.5rem",
-      }}
-      onKeyDown={onKeyDown}
-    />
-  );
-}
+const colors = {
+  'client-quote': 'rgb(59, 130, 246)',
+  'therapist-insight': 'rgb(16, 185, 129)',
+  'observation': 'rgb(99, 102, 241)',
+  'action-item': 'rgb(239, 68, 68)',
+  'reflection': 'rgb(245, 158, 11)',
+  'question': 'rgb(139, 92, 246)',
+  'progress-note': 'rgb(6, 182, 212)'
+};
 
 export function RichTextEditor({
   content,
@@ -52,41 +31,67 @@ export function RichTextEditor({
   onKeyDown,
   placeholder = "Start typing...",
   className = "",
-  style = {},
+  variant = "therapist-insight"
 }: RichTextEditorProps) {
-  const initialConfig = {
-    namespace: "MyEditor",
-    onError: (error: Error) => {
-      console.error(error);
+  const editor = useEditor({
+    extensions: [
+      StarterKit
+    ],
+    content: content || "",
+    onUpdate: ({ editor }) => {
+      onChange?.(editor.getHTML());
     },
-  };
+    editorProps: {
+      attributes: {
+        class: "outline-none px-12 py-3 min-h-[100px]",
+      },
+    }
+  });
+
+  if (!editor) {
+    return null;
+  }
+
+  const color = colors[variant];
 
   return (
-    <div className={cn("relative", className)} style={style}>
-      <LexicalComposer initialConfig={initialConfig}>
-        <PlainTextPlugin
-          contentEditable={
-            <EditorContent content={content} onKeyDown={onKeyDown} />
-          }
-          placeholder={
-            <div className="absolute top-[11px] left-[2.5rem] text-muted-foreground pointer-events-none">
-              {placeholder}
-            </div>
-          }
-          ErrorBoundary={() => null}
-        />
-        <OnChangePlugin
-          onChange={(editorState) => {
-            if (onChange) {
-              editorState.read(() => {
-                const root = $getRoot();
-                const text = root.getTextContent();
-                onChange(text);
-              });
-            }
-          }}
-        />
-      </LexicalComposer>
+    <div 
+      className={cn("relative rounded-md border", className)} 
+      style={{ 
+        borderColor: color.replace('rgb', 'rgba').replace(')', ', 0.4)'),
+        boxShadow: `0 0 0 1px ${color.replace('rgb', 'rgba').replace(')', ', 0.2)')}`
+      }}
+    >
+      <div className="flex items-center gap-2 p-2 pl-12 border-b toolbar">
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          className={cn("h-9 w-9 p-0 hover:bg-transparent", editor.isActive("bold") && "bg-muted")}
+          onClick={() => editor.chain().focus().toggleBold().run()}
+        >
+          <Bold className="h-5 w-5" />
+        </Button>
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          className={cn("h-9 w-9 p-0 hover:bg-transparent", editor.isActive("italic") && "bg-muted")}
+          onClick={() => editor.chain().focus().toggleItalic().run()}
+        >
+          <Italic className="h-5 w-5" />
+        </Button>
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          className={cn("h-9 w-9 p-0 hover:bg-transparent", editor.isActive("bulletList") && "bg-muted")}
+          onClick={() => editor.chain().focus().toggleBulletList().run()}
+        >
+          <List className="h-5 w-5" />
+        </Button>
+      </div>
+      <EditorContent editor={editor} onKeyDown={onKeyDown} />
     </div>
   );
 } 
