@@ -17,7 +17,9 @@ import {
   Eye,
   EyeOff,
   Target,
-  History
+  History,
+  ChevronDown,
+  ChevronUp
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { toast } from "react-toastify";
@@ -55,6 +57,7 @@ export default function DemoSession() {
   const [sessionDuration, setSessionDuration] = useState(50);
   const [activeExercise, setActiveExercise] = useState<string | null>(null);
   const [showMinimalTimeline, setShowMinimalTimeline] = useState(true);
+  const [showRibbon, setShowRibbon] = useState(true);
   const [plannedExercises, setPlannedExercises] = useState<string[]>([]);
   const [sessionGoals, setSessionGoals] = useState<string[]>([]);
   const [sessionNotes, setSessionNotes] = useState<string>("");
@@ -282,7 +285,7 @@ export default function DemoSession() {
         {/* Session Header */}
         <Card className="mb-6">
           <div className="p-4 flex flex-col border-b">
-            <div className="flex justify-between items-center mb-4">
+            <div className="flex justify-between items-center">
               <div className="flex items-center gap-3">
                 <SessionTimer 
                   sessionDuration={sessionDuration} 
@@ -297,53 +300,77 @@ export default function DemoSession() {
                 </div>
               </div>
 
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="outline" size="icon" className="h-8 w-8">
-                    <MoreHorizontal size={16} />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem onClick={handleEndSession} className="text-red-500 focus:text-red-500">
-                    Zakończ sesję
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+              <div className="flex items-center gap-2">
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button 
+                      variant="ghost" 
+                      size="icon"
+                      className={`h-8 w-8 ${!showRibbon && 'text-muted-foreground'}`}
+                      onClick={() => setShowRibbon(!showRibbon)}
+                    >
+                      {showRibbon ? (
+                        <ChevronDown className="h-4 w-4" />
+                      ) : (
+                        <ChevronUp className="h-4 w-4" />
+                      )}
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent side="bottom">
+                    {showRibbon ? "Ukryj opcje" : "Pokaż opcje"}
+                  </TooltipContent>
+                </Tooltip>
+
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="outline" size="icon" className="h-8 w-8">
+                      <MoreHorizontal size={16} />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem onClick={handleEndSession} className="text-red-500 focus:text-red-500">
+                      Zakończ sesję
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
             </div>
 
-            <div className="bg-muted/30 rounded-md border px-3 py-1.5 flex items-center gap-1">
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button 
-                    variant="ghost" 
-                    size="icon"
-                    className={`h-8 w-8 rounded-md ${showMinimalTimeline ? 'text-primary hover:text-primary' : 'text-muted-foreground'}`}
-                    onClick={() => setShowMinimalTimeline(!showMinimalTimeline)}
-                  >
-                    <History className="h-4 w-4" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent side="bottom">
-                  {showMinimalTimeline ? "Ukryj oś czasu" : "Pokaż oś czasu"}
-                </TooltipContent>
-              </Tooltip>
+            {showRibbon && (
+              <div className="bg-muted/30 rounded-md border px-3 py-1.5 flex items-center gap-1 mt-4">
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button 
+                      variant="ghost" 
+                      size="icon"
+                      className={`h-8 w-8 rounded-md ${showMinimalTimeline ? 'text-primary hover:text-primary' : 'text-muted-foreground'}`}
+                      onClick={() => setShowMinimalTimeline(!showMinimalTimeline)}
+                    >
+                      <History className="h-4 w-4" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent side="bottom">
+                    {showMinimalTimeline ? "Ukryj oś czasu" : "Pokaż oś czasu"}
+                  </TooltipContent>
+                </Tooltip>
 
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button 
-                    variant="ghost" 
-                    size="icon"
-                    className={`h-8 w-8 rounded-md ${showGoals ? 'text-primary hover:text-primary' : 'text-muted-foreground'}`}
-                    onClick={() => setShowGoals(!showGoals)}
-                  >
-                    <Target className="h-4 w-4" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent side="bottom">
-                  {showGoals ? "Ukryj cele" : "Pokaż cele"}
-                </TooltipContent>
-              </Tooltip>
-            </div>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button 
+                      variant="ghost" 
+                      size="icon"
+                      className={`h-8 w-8 rounded-md ${showGoals ? 'text-primary hover:text-primary' : 'text-muted-foreground'}`}
+                      onClick={() => setShowGoals(!showGoals)}
+                    >
+                      <Target className="h-4 w-4" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent side="bottom">
+                    {showGoals ? "Ukryj cele" : "Pokaż cele"}
+                  </TooltipContent>
+                </Tooltip>
+              </div>
+            )}
           </div>
         </Card>
 
