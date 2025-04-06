@@ -29,6 +29,18 @@ type RichTextEditorProps = {
   className?: string;
   color?: string;
   shouldClear?: boolean;
+  variant?: 'client-quote' | 'therapist-insight' | 'observation' | 'action-item' | 'reflection' | 'question' | 'progress-note' | 'pre-session';
+};
+
+const colors = {
+  'client-quote': 'rgb(234, 179, 8)',
+  'therapist-insight': 'rgb(59, 130, 246)',
+  'observation': 'rgb(168, 85, 247)',
+  'action-item': 'rgb(34, 197, 94)',
+  'reflection': 'rgb(236, 72, 153)',
+  'question': 'rgb(249, 115, 22)',
+  'progress-note': 'rgb(99, 102, 241)',
+  'pre-session': 'rgb(99, 102, 241)'
 };
 
 export function RichTextEditor({
@@ -38,8 +50,10 @@ export function RichTextEditor({
   placeholder = "Start typing...",
   className = "",
   color,
-  shouldClear = false
+  shouldClear = false,
+  variant
 }: RichTextEditorProps) {
+  const editorColor = color || (variant ? colors[variant] : undefined);
   const editor = useEditor({
     extensions: [
       StarterKit.configure({
@@ -83,9 +97,9 @@ export function RichTextEditor({
     <div 
       className={cn("relative rounded-md border focus-within:outline focus-within:outline-2 focus-within:outline-offset-2", className)} 
       style={{ 
-        borderColor: color ? `${color}40` : undefined,
-        boxShadow: color ? `0 0 0 1px ${color}20` : undefined,
-        outlineColor: color ? `${color}40` : undefined
+        borderColor: editorColor ? `${editorColor}40` : undefined,
+        boxShadow: editorColor ? `0 0 0 1px ${editorColor}20` : undefined,
+        outlineColor: editorColor ? `${editorColor}40` : undefined
       }}
     >
       <div className="flex items-center gap-2 p-2 pl-11 border-b toolbar">
@@ -97,7 +111,7 @@ export function RichTextEditor({
             "h-9 w-9 p-0 hover:bg-transparent", 
             editor.isActive("bold") && "bg-opacity-20"
           )}
-          style={editor.isActive("bold") ? { backgroundColor: `${color}20` } : undefined}
+          style={editor.isActive("bold") ? { backgroundColor: `${editorColor}20` } : undefined}
           onClick={() => editor.chain().focus().toggleBold().run()}
         >
           <Bold className="h-5 w-5" />
@@ -110,7 +124,7 @@ export function RichTextEditor({
             "h-9 w-9 p-0 hover:bg-transparent",
             editor.isActive("italic") && "bg-opacity-20"
           )}
-          style={editor.isActive("italic") ? { backgroundColor: `${color}20` } : undefined}
+          style={editor.isActive("italic") ? { backgroundColor: `${editorColor}20` } : undefined}
           onClick={() => editor.chain().focus().toggleItalic().run()}
         >
           <Italic className="h-5 w-5" />
@@ -123,7 +137,7 @@ export function RichTextEditor({
             "h-9 w-9 p-0 hover:bg-transparent",
             editor.isActive("underline") && "bg-opacity-20"
           )}
-          style={editor.isActive("underline") ? { backgroundColor: `${color}20` } : undefined}
+          style={editor.isActive("underline") ? { backgroundColor: `${editorColor}20` } : undefined}
           onClick={() => editor.chain().focus().toggleUnderline().run()}
         >
           <UnderlineIcon className="h-5 w-5" />
@@ -136,7 +150,7 @@ export function RichTextEditor({
             "h-9 w-9 p-0 hover:bg-transparent",
             editor.isActive("strike") && "bg-opacity-20"
           )}
-          style={editor.isActive("strike") ? { backgroundColor: `${color}20` } : undefined}
+          style={editor.isActive("strike") ? { backgroundColor: `${editorColor}20` } : undefined}
           onClick={() => editor.chain().focus().toggleStrike().run()}
         >
           <Strikethrough className="h-5 w-5" />
@@ -150,7 +164,7 @@ export function RichTextEditor({
             "h-9 w-9 p-0 hover:bg-transparent",
             editor.isActive("heading", { level: 1 }) && "bg-opacity-20"
           )}
-          style={editor.isActive("heading", { level: 1 }) ? { backgroundColor: `${color}20` } : undefined}
+          style={editor.isActive("heading", { level: 1 }) ? { backgroundColor: `${editorColor}20` } : undefined}
           onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
         >
           <Heading1 className="h-5 w-5" />
@@ -163,7 +177,7 @@ export function RichTextEditor({
             "h-9 w-9 p-0 hover:bg-transparent",
             editor.isActive("heading", { level: 2 }) && "bg-opacity-20"
           )}
-          style={editor.isActive("heading", { level: 2 }) ? { backgroundColor: `${color}20` } : undefined}
+          style={editor.isActive("heading", { level: 2 }) ? { backgroundColor: `${editorColor}20` } : undefined}
           onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
         >
           <Heading2 className="h-5 w-5" />
@@ -176,7 +190,7 @@ export function RichTextEditor({
             "h-9 w-9 p-0 hover:bg-transparent",
             editor.isActive("heading", { level: 3 }) && "bg-opacity-20"
           )}
-          style={editor.isActive("heading", { level: 3 }) ? { backgroundColor: `${color}20` } : undefined}
+          style={editor.isActive("heading", { level: 3 }) ? { backgroundColor: `${editorColor}20` } : undefined}
           onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
         >
           <Heading3 className="h-5 w-5" />
@@ -190,7 +204,7 @@ export function RichTextEditor({
             "h-9 w-9 p-0 hover:bg-transparent",
             editor.isActive("blockquote") && "bg-opacity-20"
           )}
-          style={editor.isActive("blockquote") ? { backgroundColor: `${color}20` } : undefined}
+          style={editor.isActive("blockquote") ? { backgroundColor: `${editorColor}20` } : undefined}
           onClick={() => editor.chain().focus().toggleBlockquote().run()}
         >
           <Quote className="h-5 w-5" />
@@ -204,7 +218,7 @@ export function RichTextEditor({
             "h-9 w-9 p-0 hover:bg-transparent",
             editor.isActive({ textAlign: 'left' }) && "bg-opacity-20"
           )}
-          style={editor.isActive({ textAlign: 'left' }) ? { backgroundColor: `${color}20` } : undefined}
+          style={editor.isActive({ textAlign: 'left' }) ? { backgroundColor: `${editorColor}20` } : undefined}
           onClick={() => editor.chain().focus().setTextAlign('left').run()}
         >
           <AlignLeft className="h-5 w-5" />
@@ -217,7 +231,7 @@ export function RichTextEditor({
             "h-9 w-9 p-0 hover:bg-transparent",
             editor.isActive({ textAlign: 'center' }) && "bg-opacity-20"
           )}
-          style={editor.isActive({ textAlign: 'center' }) ? { backgroundColor: `${color}20` } : undefined}
+          style={editor.isActive({ textAlign: 'center' }) ? { backgroundColor: `${editorColor}20` } : undefined}
           onClick={() => editor.chain().focus().setTextAlign('center').run()}
         >
           <AlignCenter className="h-5 w-5" />
@@ -230,7 +244,7 @@ export function RichTextEditor({
             "h-9 w-9 p-0 hover:bg-transparent",
             editor.isActive({ textAlign: 'right' }) && "bg-opacity-20"
           )}
-          style={editor.isActive({ textAlign: 'right' }) ? { backgroundColor: `${color}20` } : undefined}
+          style={editor.isActive({ textAlign: 'right' }) ? { backgroundColor: `${editorColor}20` } : undefined}
           onClick={() => editor.chain().focus().setTextAlign('right').run()}
         >
           <AlignRight className="h-5 w-5" />

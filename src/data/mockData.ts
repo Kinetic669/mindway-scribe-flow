@@ -57,20 +57,6 @@ export const noteTypes: NoteType[] = [
     icon: "book",
     visible: true,
   },
-  {
-    id: "9",
-    name: "Rysunek",
-    color: "#3498db",
-    icon: "pencil",
-    visible: true,
-  },
-  {
-    id: "pre-session",
-    name: "Notatka Przed Sesją",
-    color: "#333333",
-    icon: "calendar",
-    visible: true,
-  },
 ];
 
 export const mockNotes: Note[] = [

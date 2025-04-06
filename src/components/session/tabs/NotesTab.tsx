@@ -17,13 +17,8 @@ export const NotesTab = ({
   onDeleteNote, 
   onToggleDrawing 
 }: NotesTabProps) => {
-  // Ensure pre-session notes appear first in timeline
+  // Sort notes by timestamp (newest first)
   const sortedNotes = [...notes].sort((a, b) => {
-    // Prioritize pre-session notes
-    if (a.type.name === "Notatka z planowania") return -1;
-    if (b.type.name === "Notatka z planowania") return 1;
-    
-    // Otherwise sort by timestamp (newest first)
     return b.timestamp.getTime() - a.timestamp.getTime();
   });
 
