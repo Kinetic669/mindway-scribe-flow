@@ -2,7 +2,7 @@
 
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
-import { Bold, Italic, List } from "lucide-react";
+import { Bold, Italic } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -56,7 +56,11 @@ export function RichTextEditor({
           type="button"
           variant="ghost"
           size="sm"
-          className={cn("h-9 w-9 p-0 hover:bg-transparent", editor.isActive("bold") && "bg-muted")}
+          className={cn(
+            "h-9 w-9 p-0 hover:bg-transparent", 
+            editor.isActive("bold") && "bg-opacity-20"
+          )}
+          style={editor.isActive("bold") ? { backgroundColor: `${color}20` } : undefined}
           onClick={() => editor.chain().focus().toggleBold().run()}
         >
           <Bold className="h-5 w-5" />
@@ -65,19 +69,14 @@ export function RichTextEditor({
           type="button"
           variant="ghost"
           size="sm"
-          className={cn("h-9 w-9 p-0 hover:bg-transparent", editor.isActive("italic") && "bg-muted")}
+          className={cn(
+            "h-9 w-9 p-0 hover:bg-transparent",
+            editor.isActive("italic") && "bg-opacity-20"
+          )}
+          style={editor.isActive("italic") ? { backgroundColor: `${color}20` } : undefined}
           onClick={() => editor.chain().focus().toggleItalic().run()}
         >
           <Italic className="h-5 w-5" />
-        </Button>
-        <Button
-          type="button"
-          variant="ghost"
-          size="sm"
-          className={cn("h-9 w-9 p-0 hover:bg-transparent", editor.isActive("bulletList") && "bg-muted")}
-          onClick={() => editor.chain().focus().toggleBulletList().run()}
-        >
-          <List className="h-5 w-5" />
         </Button>
       </div>
       <EditorContent editor={editor} onKeyDown={onKeyDown} />
