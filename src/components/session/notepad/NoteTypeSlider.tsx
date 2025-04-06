@@ -9,10 +9,10 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 type NoteTypeSliderProps = {
   noteTypes: NoteType[];
   selectedType: NoteType;
-  onSelect: (type: NoteType) => void;
+  onTypeChange: (type: NoteType) => void;
 };
 
-export const NoteTypeSlider = ({ noteTypes, selectedType, onSelect }: NoteTypeSliderProps) => {
+export const NoteTypeSlider = ({ noteTypes, selectedType, onTypeChange }: NoteTypeSliderProps) => {
   const sliderRef = useRef<HTMLDivElement>(null);
   const [showLeftArrow, setShowLeftArrow] = useState(false);
   const [showRightArrow, setShowRightArrow] = useState(true);
@@ -81,7 +81,7 @@ export const NoteTypeSlider = ({ noteTypes, selectedType, onSelect }: NoteTypeSl
               color: selectedType.id === type.id ? '#fff' : type.color,
               borderColor: type.color
             }}
-            onClick={() => onSelect(type)}
+            onClick={() => onTypeChange(type)}
             data-note-type-id={type.id}
           >
             {type.name}
