@@ -6,6 +6,7 @@ import { TestimonialSection } from "@/components/landing/TestimonialSection";
 import { CTASection } from "@/components/landing/CTASection";
 import { NavBar } from "@/components/NavBar";
 import { Footer } from "@/components/Footer";
+import React from "react";
 
 export default function Home() {
   return (

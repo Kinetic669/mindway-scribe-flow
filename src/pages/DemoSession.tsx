@@ -14,7 +14,10 @@ import { SessionTimer } from "@/components/session/SessionTimer";
 import { 
   Clock, 
   MoreHorizontal,
-  Eye
+  Eye,
+  EyeOff,
+  Target,
+  History
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { toast } from "react-toastify";
@@ -38,19 +41,25 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 export default function DemoSession() {
   const navigate = useNavigate(); // Changed from router to navigate
   const [notes, setNotes] = useState<Note[]>(mockNotes);
   const [isDrawingMode, setIsDrawingMode] = useState(false);
   const [sessionStartTime] = useState(new Date());
-  const [sessionDuration, setSessionDuration] = useState(50); // Default 50 minutes
+  const [sessionDuration, setSessionDuration] = useState(50);
   const [activeExercise, setActiveExercise] = useState<string | null>(null);
   const [showMinimalTimeline, setShowMinimalTimeline] = useState(true);
   const [plannedExercises, setPlannedExercises] = useState<string[]>([]);
   const [sessionGoals, setSessionGoals] = useState<string[]>([]);
   const [sessionNotes, setSessionNotes] = useState<string>("");
   const [showEndSessionDialog, setShowEndSessionDialog] = useState(false);
+  const [showGoals, setShowGoals] = useState(true);
   const [selectedDrawingType, setSelectedDrawingType] = useState<NoteType>(
     noteTypes.find(t => t.name === "Rysunek") || 
     noteTypes.find(t => t.name.toLowerCase().includes("rysun")) || 
@@ -300,30 +309,56 @@ export default function DemoSession() {
             </DropdownMenu>
           </div>
           
+          {/* Options bar */}
+          <div className="px-4 py-2 border-b flex items-center justify-between bg-muted/30">
+            <div className="flex items-center gap-4">
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button 
+                    variant="ghost" 
+                    size="icon"
+                    className="h-8 w-8"
+                    onClick={() => setShowMinimalTimeline(!showMinimalTimeline)}
+                  >
+                    {showMinimalTimeline ? <History className="h-4 w-4" /> : <History className="h-4 w-4" />}
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  {showMinimalTimeline ? "Ukryj oś czasu" : "Pokaż oś czasu"}
+                </TooltipContent>
+              </Tooltip>
+
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button 
+                    variant="ghost" 
+                    size="icon"
+                    className="h-8 w-8"
+                    onClick={() => setShowGoals(!showGoals)}
+                  >
+                    <Target className="h-4 w-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  {showGoals ? "Ukryj cele" : "Pokaż cele"}
+                </TooltipContent>
+              </Tooltip>
+            </div>
+          </div>
+          
           {/* Integrated MinimalTimeline */}
           <div className="px-4 py-3">
-            {showMinimalTimeline ? (
-              <MinimalTimelineNew
-                notes={notes.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime())} 
-                visible={showMinimalTimeline}
-                onToggleVisibility={() => setShowMinimalTimeline(!showMinimalTimeline)}
-                onNoteClick={handleNoteClick}
-              />
-            ) : (
-              <Button 
-                variant="outline" 
-                size="sm" 
-                onClick={() => setShowMinimalTimeline(true)}
-              >
-                <Eye size={16} className="mr-2" />
-                <span>Pokaż oś czasu</span>
-              </Button>
-            )}
+            <MinimalTimelineNew
+              notes={notes.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime())} 
+              visible={showMinimalTimeline}
+              onToggleVisibility={() => setShowMinimalTimeline(!showMinimalTimeline)}
+              onNoteClick={handleNoteClick}
+            />
           </div>
         </Card>
         
         {/* Session goals */}
-        {sessionGoals.length > 0 && (
+        {showGoals && sessionGoals.length > 0 && (
           <Card className="mb-6 p-4">
             <div className="mb-3">
               <h2 className="text-sm font-medium text-gray-500">Cele sesji:</h2>
