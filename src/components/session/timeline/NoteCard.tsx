@@ -23,7 +23,8 @@ import {
   Heart,
   Activity,
   AlertTriangle,
-  Bookmark
+  Bookmark,
+  HelpCircle
 } from "lucide-react";
 import { 
   DropdownMenu,
@@ -62,19 +63,25 @@ export const NoteCard = ({
   const getIconForType = (typeName: string) => {
     const lowerCaseName = typeName.toLowerCase();
     
+    // Special types (used in both timeline dot and badge)
     if (isDrawing) return <Pencil size={16} />;
     if (isExercise) return <Brain size={16} />;
     if (isPlanningNote) return <Calendar size={16} />;
     
-    // Standard types (used in the type label, not in the timeline dot)
-    if (lowerCaseName.includes('client quote')) return <MessageSquare size={16} />;
-    if (lowerCaseName.includes('therapist insight')) return <Lightbulb size={16} />;
-    if (lowerCaseName.includes('observation')) return <Eye size={16} />;
-    if (lowerCaseName.includes('action item')) return <CheckSquare size={16} />;
-    if (lowerCaseName.includes('question')) return <Circle size={16} />;
-    if (lowerCaseName.includes('resource')) return <Book size={16} />;
-    if (lowerCaseName.includes('progress')) return <Activity size={16} />;
-    if (lowerCaseName.includes('reflection')) return <Brain size={16} />;
+    // Standard types (used only in badge)
+    if (lowerCaseName.includes('wypowiedź klienta') || lowerCaseName.includes('client quote')) return <MessageSquare size={16} />;
+    if (lowerCaseName.includes('spostrzeżenie') || lowerCaseName.includes('insight')) return <Lightbulb size={16} />;
+    if (lowerCaseName.includes('obserwacja') || lowerCaseName.includes('observation')) return <Eye size={16} />;
+    if (lowerCaseName.includes('zadanie') || lowerCaseName.includes('action')) return <CheckSquare size={16} />;
+    if (lowerCaseName.includes('pytanie') || lowerCaseName.includes('question')) return <HelpCircle size={16} />;
+    if (lowerCaseName.includes('zasób') || lowerCaseName.includes('resource')) return <Book size={16} />;
+    if (lowerCaseName.includes('postęp') || lowerCaseName.includes('progress')) return <Activity size={16} />;
+    if (lowerCaseName.includes('refleksja') || lowerCaseName.includes('reflection')) return <Brain size={16} />;
+    if (lowerCaseName.includes('ćwiczenie') || lowerCaseName.includes('exercise')) return <Dumbbell size={16} />;
+    if (lowerCaseName.includes('notatka') || lowerCaseName.includes('note')) return <FileText size={16} />;
+    if (lowerCaseName.includes('emocje') || lowerCaseName.includes('emotion')) return <Heart size={16} />;
+    if (lowerCaseName.includes('ostrzeżenie') || lowerCaseName.includes('warning')) return <AlertTriangle size={16} />;
+    if (lowerCaseName.includes('zakładka') || lowerCaseName.includes('bookmark')) return <Bookmark size={16} />;
     
     return <MessageSquare size={16} />;
   };
@@ -155,13 +162,6 @@ export const NoteCard = ({
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
-        
-        {isPlanningNote && (
-          <div className="text-xs text-gray-600 mb-1 flex items-center">
-            <Calendar size={12} className="mr-1" />
-            Pre-session note
-          </div>
-        )}
         
         <Card 
           className={`note-card relative ${expanded ? 'border-mindway-primary' : ''}`}
