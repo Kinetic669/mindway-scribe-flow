@@ -31,9 +31,9 @@ type TimelinePointProps = {
 
 export const TimelinePoint = ({ note, showMinutes, timeKey, onNoteClick }: TimelinePointProps) => {
   // Special note type detection
-  const isDrawing = note.content.startsWith("data:image") || note.type.name.toLowerCase().includes("rysunek");
+  const isDrawing = note.content.startsWith("data:image") || note.type.name.toLowerCase().includes("drawing") || note.type.name.toLowerCase().includes("rysunek");
   const isExercise = note.type.name.toLowerCase().includes("ćwiczenie") || note.content.toLowerCase().includes("rozpoczęto ćwiczenie");
-  const isPlanningNote = note.type.name.toLowerCase().includes("planowanie") || note.type.id === "pre-session";
+  const isPlanningNote = note.type.name.toLowerCase().includes("pre-session") || note.type.id === "pre-session";
   
   // Get icon based on note type
   const getIcon = () => {

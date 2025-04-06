@@ -36,6 +36,15 @@ export const Notepad = ({ onAddNote, onToggleDrawing }: NotepadProps) => {
   const [selectedType, setSelectedType] = useState<NoteType>(noteTypes[0]);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
+  // Find drawing note type for button color
+  const drawingType = noteTypes.find(t => 
+    t.name === "Drawing" || 
+    t.name.toLowerCase().includes("drawing") || 
+    t.name.toLowerCase().includes("rysunek")
+  ) || {
+    color: "#3498db" // Default blue if type not found
+  };
+
   useEffect(() => {
     // Focus textarea on component mount
     if (textareaRef.current) {
@@ -77,29 +86,33 @@ export const Notepad = ({ onAddNote, onToggleDrawing }: NotepadProps) => {
 
   const getIconForType = (typeName: string) => {
     switch (typeName.toLowerCase()) {
-      case "wypowiedź klienta": return <MessageSquare size={14} />;
-      case "spostrzeżenie terapeuty": return <Lightbulb size={14} />;
-      case "obserwacja": return <Eye size={14} />;
-      case "zadanie": return <CheckSquare size={14} />;
-      case "refleksja": return <Brain size={14} />;
+      case "client quote": return <MessageSquare size={14} />;
+      case "therapist insight": return <Lightbulb size={14} />;
+      case "observation": return <Eye size={14} />;
+      case "action item": return <CheckSquare size={14} />;
+      case "reflection": return <Brain size={14} />;
       default: return <Sparkles size={14} />;
     }
   };
 
-  // Quick type selection buttons
-  const quickTypeButtons = noteTypes.slice(0, 3); // Show only first 3 for quick access
+  // Display all note types as buttons in a horizontal row, with scrolling if needed
+  const allNoteTypes = noteTypes.filter(type => 
+    !type.name.toLowerCase().includes("drawing") && 
+    !type.name.toLowerCase().includes("rysunek") && 
+    type.id !== "pre-session"
+  );
 
   return (
     <Card className="p-4 mb-4 border rounded-lg shadow-sm">
-      <div className="flex gap-2 mb-3 flex-wrap">
-        {/* Quick Type Selection */}
-        <div className="flex flex-wrap gap-1 mr-2">
-          {quickTypeButtons.map((type) => (
+      <div className="flex gap-2 mb-3 overflow-x-auto pb-2 flex-nowrap">
+        {/* All Note Types in a scrollable row */}
+        <div className="flex gap-1.5 flex-nowrap">
+          {allNoteTypes.map((type) => (
             <Button
               key={type.id}
               variant={selectedType.id === type.id ? "default" : "outline"}
               size="sm"
-              className="flex gap-1 items-center"
+              className="flex gap-1 items-center whitespace-nowrap"
               style={{ 
                 backgroundColor: selectedType.id === type.id ? type.color : 'transparent',
                 borderColor: type.color, 
@@ -107,7 +120,7 @@ export const Notepad = ({ onAddNote, onToggleDrawing }: NotepadProps) => {
               }}
               onClick={() => {
                 setSelectedType(type);
-                toast.success(`Typ notatki: ${type.name}`);
+                toast.success(`Note type: ${type.name}`);
                 // Focus on textarea after selecting a note type
                 if (textareaRef.current) {
                   textareaRef.current.focus();
@@ -115,58 +128,22 @@ export const Notepad = ({ onAddNote, onToggleDrawing }: NotepadProps) => {
               }}
             >
               {getIconForType(type.name)}
-              <span className="truncate max-w-24">{type.name}</span>
+              <span className="truncate max-w-28">{type.name}</span>
             </Button>
           ))}
         </div>
-
-        {/* Full Type Dropdown */}
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button
-              variant="outline"
-              size="sm"
-              className="flex gap-1 items-center"
-              data-note-type-selector
-            >
-              <span>Więcej typów</span>
-              <ChevronDown size={14} />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="start" className="w-56">
-            {noteTypes.map((type) => (
-              <DropdownMenuItem
-                key={type.id}
-                onClick={() => {
-                  setSelectedType(type);
-                  toast.success(`Typ notatki: ${type.name}`);
-                  if (textareaRef.current) textareaRef.current.focus();
-                }}
-                className="flex gap-2 items-center cursor-pointer py-2"
-              >
-                <div
-                  className="w-3 h-3 rounded-full"
-                  style={{ backgroundColor: type.color }}
-                />
-                <span>{type.name}</span>
-                {selectedType.id === type.id && (
-                  <span className="ml-auto text-xs text-muted-foreground">Wybrano</span>
-                )}
-              </DropdownMenuItem>
-            ))}
-          </DropdownMenuContent>
-        </DropdownMenu>
 
         <Button 
           variant="outline" 
           size="sm"
           onClick={onToggleDrawing}
           style={{ 
-            borderColor: `${selectedType.color}40`,
-            color: selectedType.color
+            borderColor: drawingType.color,
+            backgroundColor: `${drawingType.color}10`,
+            color: drawingType.color
           }}
         >
-          <Pencil size={14} className="mr-1" /> Rysuj
+          <Pencil size={14} className="mr-1" /> Draw
         </Button>
         
         <Button variant="outline" size="sm">
@@ -174,7 +151,7 @@ export const Notepad = ({ onAddNote, onToggleDrawing }: NotepadProps) => {
         </Button>
 
         <Button variant="outline" size="sm" className="ml-auto">
-          <Plus size={14} className="mr-1" /> Dodaj
+          <Plus size={14} className="mr-1" /> Add
         </Button>
       </div>
       
@@ -190,7 +167,7 @@ export const Notepad = ({ onAddNote, onToggleDrawing }: NotepadProps) => {
         </div>
         <Textarea 
           ref={textareaRef}
-          placeholder={`Wpisz swoje ${selectedType.name.toLowerCase()} tutaj...`}
+          placeholder={`Type your ${selectedType.name.toLowerCase()} here...`}
           className="min-h-[100px] resize-none pl-10 pr-16 py-3 focus-visible:ring-2"
           style={{ 
             borderColor: `${selectedType.color}40`,
@@ -211,12 +188,12 @@ export const Notepad = ({ onAddNote, onToggleDrawing }: NotepadProps) => {
             borderColor: selectedType.color
           }}
         >
-          <Send size={16} className="mr-1" /> Wyślij
+          <Send size={16} className="mr-1" /> Send
         </Button>
       </div>
       <div className="mt-2 text-xs text-gray-500 flex justify-between px-1">
-        <span>Wskazówka: Wpisz / aby szybko wybrać typ notatki</span>
-        <span>Naciśnij Ctrl+Enter aby wysłać</span>
+        <span>Tip: Press / to quickly select note type</span>
+        <span>Press Ctrl+Enter to send</span>
       </div>
     </Card>
   );

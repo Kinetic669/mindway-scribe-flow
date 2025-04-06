@@ -35,6 +35,9 @@ export const SessionTimer = ({ sessionDuration, sessionStartTime }: SessionTimer
     return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
   };
   
+  // Use the blue color as requested
+  const primaryBlue = "#4c6fff"; // Same blue as used for buttons
+  
   // Determine color based on time left
   const getTimerColor = (): string => {
     const totalSessionTime = sessionDuration * 60;
@@ -42,7 +45,7 @@ export const SessionTimer = ({ sessionDuration, sessionStartTime }: SessionTimer
     
     if (percentLeft < 10) return 'text-red-500 stroke-red-500';
     if (percentLeft < 25) return 'text-amber-500 stroke-amber-500';
-    return 'text-gray-700 stroke-gray-700';
+    return `text-[${primaryBlue}] stroke-[${primaryBlue}]`;
   };
 
   // Calculate stroke dash array and offset for circle progress
@@ -66,15 +69,14 @@ export const SessionTimer = ({ sessionDuration, sessionStartTime }: SessionTimer
           cy="30"
           r={radius}
           fill="transparent"
-          stroke="currentColor"
+          stroke={primaryBlue}
           strokeWidth="3"
           strokeDasharray={circumference}
           strokeDashoffset={strokeDashoffset}
-          className={getTimerColor()}
           strokeLinecap="round"
         />
       </svg>
-      <div className={`absolute inset-0 flex items-center justify-center text-xl font-medium ${getTimerColor()}`}>
+      <div className={`absolute inset-0 flex items-center justify-center text-xl font-medium text-[${primaryBlue}]`}>
         {formatTime(timeLeft)}
       </div>
     </div>

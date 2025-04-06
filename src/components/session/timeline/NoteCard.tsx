@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState } from "react";
@@ -53,9 +52,9 @@ export const NoteCard = ({
   const [expanded, setExpanded] = useState(false);
 
   // Determine if this is a special type of note
-  const isDrawing = note.content.includes("data:image") || note.type.name.toLowerCase().includes("rysunek");
+  const isDrawing = note.content.includes("data:image") || note.type.name.toLowerCase().includes("drawing") || note.type.name.toLowerCase().includes("rysunek");
   const isExercise = note.type.name.toLowerCase().includes("ćwiczenie") || note.content.toLowerCase().includes("rozpoczęto ćwiczenie");
-  const isPlanningNote = note.type.name.toLowerCase().includes("planowanie") || note.type.id === "pre-session";
+  const isPlanningNote = note.type.name.toLowerCase().includes("pre-session") || note.type.id === "pre-session";
 
   // Only these special types should show icons in the main timeline
   const shouldShowSpecialIcon = isDrawing || isExercise || isPlanningNote;
@@ -68,18 +67,14 @@ export const NoteCard = ({
     if (isPlanningNote) return <Calendar size={16} />;
     
     // Standard types (used in the type label, not in the timeline dot)
-    if (lowerCaseName.includes('wypowiedź')) return <MessageSquare size={16} />;
-    if (lowerCaseName.includes('spostrzeżenie')) return <Lightbulb size={16} />;
-    if (lowerCaseName.includes('obserwacja')) return <Eye size={16} />;
-    if (lowerCaseName.includes('zadanie')) return <CheckSquare size={16} />;
-    if (lowerCaseName.includes('pytanie')) return <Circle size={16} />;
-    if (lowerCaseName.includes('ćwiczenie fizyczne')) return <Dumbbell size={16} />;
-    if (lowerCaseName.includes('notatka')) return <FileText size={16} />;
-    if (lowerCaseName.includes('cel')) return <Bookmark size={16} />;
-    if (lowerCaseName.includes('zagrożenie')) return <AlertTriangle size={16} />;
-    if (lowerCaseName.includes('postęp')) return <Activity size={16} />;
-    if (lowerCaseName.includes('zasoby')) return <Book size={16} />;
-    if (lowerCaseName.includes('wzmocnienie')) return <Heart size={16} />;
+    if (lowerCaseName.includes('client quote')) return <MessageSquare size={16} />;
+    if (lowerCaseName.includes('therapist insight')) return <Lightbulb size={16} />;
+    if (lowerCaseName.includes('observation')) return <Eye size={16} />;
+    if (lowerCaseName.includes('action item')) return <CheckSquare size={16} />;
+    if (lowerCaseName.includes('question')) return <Circle size={16} />;
+    if (lowerCaseName.includes('resource')) return <Book size={16} />;
+    if (lowerCaseName.includes('progress')) return <Activity size={16} />;
+    if (lowerCaseName.includes('reflection')) return <Brain size={16} />;
     
     return <MessageSquare size={16} />;
   };
@@ -162,9 +157,9 @@ export const NoteCard = ({
         </div>
         
         {isPlanningNote && (
-          <div className="text-xs text-amber-600 mb-1 flex items-center">
+          <div className="text-xs text-gray-600 mb-1 flex items-center">
             <Calendar size={12} className="mr-1" />
-            Notatka z planowania sesji
+            Pre-session note
           </div>
         )}
         

@@ -37,6 +37,41 @@ export const noteTypes: NoteType[] = [
     icon: "brain",
     visible: true,
   },
+  {
+    id: "6",
+    name: "Question",
+    color: "#8b5cf6",
+    icon: "help-circle",
+    visible: true,
+  },
+  {
+    id: "7",
+    name: "Progress Note",
+    color: "#06b6d4",
+    icon: "activity",
+    visible: true,
+  },
+  {
+    id: "8",
+    name: "Resource",
+    color: "#14b8a6",
+    icon: "book",
+    visible: true,
+  },
+  {
+    id: "9",
+    name: "Drawing",
+    color: "#3498db",
+    icon: "pencil",
+    visible: true,
+  },
+  {
+    id: "pre-session",
+    name: "Pre-session Note",
+    color: "#333333", // Dark gray as requested
+    icon: "calendar",
+    visible: true,
+  },
 ];
 
 export const mockNotes: Note[] = [
