@@ -9,7 +9,7 @@ import { DrawingCanvas } from "@/components/session/DrawingCanvas";
 import { NavBar } from "@/components/NavBar";
 import { Button } from "@/components/ui/button";
 import { SessionTabs } from "@/components/session/SessionTabs";
-import { MinimalTimeline } from "@/components/session/minimaltimeline/MinimalTimeline";
+import { MinimalTimelineNew } from "@/components/session/MinimalTimelineNew";
 import { SessionTimer } from "@/components/session/SessionTimer";
 import { 
   Clock, 
@@ -303,13 +303,11 @@ export default function DemoSession() {
           {/* Integrated MinimalTimeline */}
           <div className="px-4 py-3">
             {showMinimalTimeline ? (
-              <MinimalTimeline 
+              <MinimalTimelineNew
                 notes={notes.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime())} 
                 visible={showMinimalTimeline}
                 onToggleVisibility={() => setShowMinimalTimeline(!showMinimalTimeline)}
                 onNoteClick={handleNoteClick}
-                sessionDuration={sessionDuration}
-                sessionStartTime={sessionStartTime}
               />
             ) : (
               <Button 
