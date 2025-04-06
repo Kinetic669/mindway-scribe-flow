@@ -104,7 +104,7 @@ export function MinimalTimelineNew({ notes, visible, onToggleVisibility, onNoteC
 
   return (
     <div className="w-full overflow-x-auto">
-      <div className="flex gap-2 min-w-max py-2 px-4">
+      <div className="flex gap-2 min-w-max py-2 px-2">
         {notes
           .sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime())
           .map(note => {

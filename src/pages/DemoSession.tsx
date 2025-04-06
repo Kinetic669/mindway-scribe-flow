@@ -279,51 +279,51 @@ export default function DemoSession() {
       <NavBar />
       
       <main className="flex-grow max-w-4xl mx-auto px-4 md:px-6 pt-4 pb-20">
-        {/* Session Header with MinimalTimeline integrated */}
+        {/* Session Header */}
         <Card className="mb-6">
-          <div className="p-4 flex justify-between items-center border-b">
-            <div className="flex items-center gap-3">
-              <SessionTimer 
-                sessionDuration={sessionDuration} 
-                sessionStartTime={sessionStartTime}
-              />
-              <div>
-                <h1 className="text-xl font-semibold">Sesja z Janem Kowalskim</h1>
-                <div className="flex items-center gap-2 text-sm text-gray-500">
-                  <Clock size={14} />
-                  <span>{sessionDuration} min</span>
+          <div className="p-4 flex flex-col border-b">
+            <div className="flex justify-between items-center mb-4">
+              <div className="flex items-center gap-3">
+                <SessionTimer 
+                  sessionDuration={sessionDuration} 
+                  sessionStartTime={sessionStartTime}
+                />
+                <div>
+                  <h1 className="text-xl font-semibold">Sesja z Janem Kowalskim</h1>
+                  <div className="flex items-center gap-2 text-sm text-gray-500">
+                    <Clock size={14} />
+                    <span>{sessionDuration} min</span>
+                  </div>
                 </div>
               </div>
+
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" size="icon" className="h-8 w-8">
+                    <MoreHorizontal size={16} />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem onClick={handleEndSession} className="text-red-500 focus:text-red-500">
+                    Zakończ sesję
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="icon">
-                  <MoreHorizontal size={18} />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={handleEndSession} className="text-red-500 focus:text-red-500">
-                  Zakończ sesję
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-          
-          {/* Options bar */}
-          <div className="px-4 py-2 border-b flex items-center justify-between bg-muted/30">
-            <div className="flex items-center gap-4">
+
+            <div className="bg-muted/30 rounded-md border px-3 py-1.5 flex items-center gap-1">
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button 
                     variant="ghost" 
                     size="icon"
-                    className="h-8 w-8"
+                    className={`h-8 w-8 rounded-md ${showMinimalTimeline ? 'text-primary hover:text-primary' : 'text-muted-foreground'}`}
                     onClick={() => setShowMinimalTimeline(!showMinimalTimeline)}
                   >
-                    {showMinimalTimeline ? <History className="h-4 w-4" /> : <History className="h-4 w-4" />}
+                    <History className="h-4 w-4" />
                   </Button>
                 </TooltipTrigger>
-                <TooltipContent>
+                <TooltipContent side="bottom">
                   {showMinimalTimeline ? "Ukryj oś czasu" : "Pokaż oś czasu"}
                 </TooltipContent>
               </Tooltip>
@@ -333,29 +333,33 @@ export default function DemoSession() {
                   <Button 
                     variant="ghost" 
                     size="icon"
-                    className="h-8 w-8"
+                    className={`h-8 w-8 rounded-md ${showGoals ? 'text-primary hover:text-primary' : 'text-muted-foreground'}`}
                     onClick={() => setShowGoals(!showGoals)}
                   >
                     <Target className="h-4 w-4" />
                   </Button>
                 </TooltipTrigger>
-                <TooltipContent>
+                <TooltipContent side="bottom">
                   {showGoals ? "Ukryj cele" : "Pokaż cele"}
                 </TooltipContent>
               </Tooltip>
             </div>
           </div>
-          
-          {/* Integrated MinimalTimeline */}
-          <div className="px-4 py-3">
-            <MinimalTimelineNew
-              notes={notes.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime())} 
-              visible={showMinimalTimeline}
-              onToggleVisibility={() => setShowMinimalTimeline(!showMinimalTimeline)}
-              onNoteClick={handleNoteClick}
-            />
-          </div>
         </Card>
+
+        {/* Minimal Timeline Card */}
+        {showMinimalTimeline && (
+          <Card className="mb-6">
+            <div className="px-2 py-3">
+              <MinimalTimelineNew
+                notes={notes.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime())} 
+                visible={true}
+                onToggleVisibility={() => setShowMinimalTimeline(!showMinimalTimeline)}
+                onNoteClick={handleNoteClick}
+              />
+            </div>
+          </Card>
+        )}
         
         {/* Session goals */}
         {showGoals && sessionGoals.length > 0 && (
