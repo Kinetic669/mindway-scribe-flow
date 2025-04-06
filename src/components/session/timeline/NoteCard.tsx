@@ -55,7 +55,7 @@ export const NoteCard = ({
   // Determine if this is a special type of note
   const isDrawing = note.content.includes("data:image") || note.type.name.toLowerCase().includes("rysunek");
   const isExercise = note.type.name.toLowerCase().includes("ćwiczenie") || note.content.toLowerCase().includes("rozpoczęto ćwiczenie");
-  const isPlanningNote = note.type.name.toLowerCase().includes("planowanie");
+  const isPlanningNote = note.type.name.toLowerCase().includes("planowanie") || note.type.id === "pre-session";
 
   // Only these special types should show icons in the main timeline
   const shouldShowSpecialIcon = isDrawing || isExercise || isPlanningNote;
@@ -90,20 +90,18 @@ export const NoteCard = ({
 
   return (
     <div className="timeline-item" id={`note-${note.id}`}>
-      <div 
-        className="timeline-dot"
-        style={{ 
-          backgroundColor: shouldShowSpecialIcon ? 'transparent' : note.type.color,
-          borderColor: note.type.color,
-          border: shouldShowSpecialIcon ? '2px solid' : 'none'
-        }}
-      >
-        {shouldShowSpecialIcon && (
+      {shouldShowSpecialIcon ? (
+        <div className="timeline-dot flex items-center justify-center" style={{ backgroundColor: 'transparent' }}>
           <span style={{ color: note.type.color }}>
             {getIconForType(note.type.name)}
           </span>
-        )}
-      </div>
+        </div>
+      ) : (
+        <div 
+          className="timeline-dot"
+          style={{ backgroundColor: note.type.color }}
+        />
+      )}
       
       <div className="ml-4">
         <div className="flex items-center justify-between text-sm text-gray-500 mb-1">

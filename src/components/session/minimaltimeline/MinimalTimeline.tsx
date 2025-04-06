@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Note } from "@/types";
 import { Button } from "@/components/ui/button";
@@ -109,11 +110,17 @@ export const MinimalTimeline = ({
         onTimeFormatChange={handleFormatToggle}
       />
       
-      <div className="overflow-x-auto w-full">
-        <div className="flex items-center flex-nowrap space-x-3 py-3 px-1 min-w-full" 
-             style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+      <div className="overflow-x-auto w-full" style={{ WebkitOverflowScrolling: 'touch' }}>
+        <div className="flex items-center gap-3 py-3 px-1" 
+             style={{ 
+               overflowX: 'auto', 
+               display: 'flex', 
+               flexWrap: 'nowrap', 
+               minWidth: '100%',
+               width: 'max-content'
+             }}>
           {sortedTimes.map(time => (
-            <div key={time} className="flex flex-col items-center min-w-[40px] flex-shrink-0">
+            <div key={time} className="flex flex-col items-center" style={{ minWidth: '40px', flexShrink: 0 }}>
               <div className="text-xs text-gray-500 mb-1">{showMinutes ? `${time} min` : time}</div>
               <div className="flex flex-col items-center gap-1.5">
                 {groupedNotes[time].map(note => (
