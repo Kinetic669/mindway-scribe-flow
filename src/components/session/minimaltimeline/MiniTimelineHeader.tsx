@@ -10,32 +10,40 @@ type MiniTimelineHeaderProps = {
   onTimeFormatChange: () => void;
 };
 
-export const MiniTimelineHeader = ({
-  onToggleVisibility,
-  showTimeFormat,
-  onTimeFormatChange
+export const MiniTimelineHeader = ({ 
+  onToggleVisibility, 
+  showTimeFormat, 
+  onTimeFormatChange 
 }: MiniTimelineHeaderProps) => {
   return (
-    <div className="flex justify-end items-center mb-2">
-      <div className="flex items-center gap-2">
-        <Button 
-          variant="ghost" 
-          size="icon"
-          onClick={onTimeFormatChange}
-          className="h-6 w-6 p-0"
-          title={showTimeFormat ? "Pokaż godziny" : "Pokaż minuty sesji"}
-        >
-          {showTimeFormat ? <Clock size={14} /> : <Calendar size={14} />}
-        </Button>
-        <Button 
-          variant="ghost" 
-          size="icon" 
-          onClick={onToggleVisibility}
-          className="h-6 w-6 p-0"
-        >
-          <EyeOff size={14} />
-        </Button>
-      </div>
+    <div className="flex justify-end items-center gap-2 py-1">
+      <Button 
+        variant="outline" 
+        size="sm" 
+        className="h-7 px-2 text-xs"
+        onClick={onTimeFormatChange}
+      >
+        {showTimeFormat ? (
+          <>
+            <Calendar size={14} className="mr-1" />
+            <span>Godziny</span>
+          </>
+        ) : (
+          <>
+            <Clock size={14} className="mr-1" />
+            <span>Minuty</span>
+          </>
+        )}
+      </Button>
+      <Button 
+        variant="outline" 
+        size="sm" 
+        className="h-7 px-2 text-xs"
+        onClick={onToggleVisibility}
+      >
+        <EyeOff size={14} className="mr-1" />
+        <span>Ukryj</span>
+      </Button>
     </div>
   );
 };

@@ -1,9 +1,7 @@
-
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
-import { Link } from "react-router-dom";
+import { useRouter } from "next/navigation";
 import { v4 as uuidv4 } from "uuid";
 import { Note, NoteType } from "@/types";
 import { mockNotes, noteTypes } from "@/data/mockData";
@@ -42,7 +40,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 export default function DemoSession() {
-  const navigate = useNavigate();
+  const router = useRouter();
   const [notes, setNotes] = useState<Note[]>(mockNotes);
   const [isDrawingMode, setIsDrawingMode] = useState(false);
   const [sessionStartTime] = useState(new Date());
@@ -117,7 +115,6 @@ export default function DemoSession() {
     }
   }, [sessionNotes, sessionStartTime]);
 
-  // Add note
   const addNote = (content: string, type: NoteType) => {
     const newNote: Note = {
       id: uuidv4(),
@@ -129,17 +126,35 @@ export default function DemoSession() {
     };
 
     setNotes(prev => [newNote, ...prev]);
-    toast(`Notatka dodana do osi czasu`);
+    toast.success("Notatka dodana do osi czasu");
   };
 
-  // Delete note
   const deleteNote = (id: string) => {
     setNotes(prev => prev.filter(note => note.id !== id));
-    toast(`Notatka usunięta`);
+    toast.success("Notatka usunięta");
   };
 
   const handleAssignExercise = (exerciseType: string) => {
     setActiveExercise(exerciseType);
+    
+    // Create an exercise note with proper type
+    const exerciseNoteType = noteTypes.find(t => t.name === "Ćwiczenie") || {
+      id: "exercise",
+      name: "Ćwiczenie",
+      color: "#8e44ad", // Purple color for exercises
+      visible: true
+    };
+    
+    const exerciseNote: Note = {
+      id: uuidv4(),
+      content: `Rozpoczęto ćwiczenie: ${exerciseType}`,
+      type: exerciseNoteType,
+      timestamp: new Date(),
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+    
+    setNotes(prev => [exerciseNote, ...prev]);
     toast(`Ćwiczenie wybrane: ${exerciseType}`);
   };
 
@@ -148,7 +163,12 @@ export default function DemoSession() {
     const drawingType = noteTypes.find(t => 
       t.name === "Rysunek" || 
       t.name.toLowerCase().includes("rysun")
-    ) || selectedDrawingType;
+    ) || {
+      id: "drawing",
+      name: "Rysunek",
+      color: "#3498db", // Blue color for drawings
+      visible: true
+    };
 
     const drawingNote: Note = {
       id: uuidv4(),
@@ -161,7 +181,7 @@ export default function DemoSession() {
 
     setNotes(prev => [drawingNote, ...prev]);
     setIsDrawingMode(false);
-    toast(`Rysunek dodany jako ${drawingType.name}`);
+    toast(`Rysunek dodany do notatek`);
   };
 
   const handleEmotionWheelSave = (data: { emotion: string; intensity: number; notes: string }) => {
@@ -243,7 +263,7 @@ export default function DemoSession() {
   const confirmEndSession = () => {
     // In a real app, save session data, etc.
     toast("Sesja została zakończona");
-    navigate('/'); // Navigate to home page or summary page
+    router.push('/'); // Navigate to home page or summary page
   };
 
   return (
@@ -260,10 +280,10 @@ export default function DemoSession() {
                 sessionStartTime={sessionStartTime}
               />
               <div>
-                <h1 className="text-xl font-semibold">Sesja demonstracyjna</h1>
+                <h1 className="text-xl font-semibold">Sesja z Janem Kowalskim</h1>
                 <div className="flex items-center gap-2 text-sm text-gray-500">
                   <Clock size={14} />
-                  <span>Zaplanowana na {sessionDuration} minut</span>
+                  <span>{sessionDuration} min</span>
                 </div>
               </div>
             </div>
@@ -334,6 +354,10 @@ export default function DemoSession() {
                 setSelectedDrawingType(type);
                 console.log(`Selected type for drawing: ${type.name}`);
               }
+            } else {
+              // If no type is selected, use the drawing type
+              const drawingType = noteTypes.find(t => t.name === "Rysunek") || noteTypes[0];
+              setSelectedDrawingType(drawingType);
             }
             setIsDrawingMode(true);
           }}

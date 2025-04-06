@@ -16,13 +16,16 @@ export const NoteTypeSlider = ({ noteTypes, selectedType, onTypeChange }: NoteTy
   const sliderRef = useRef<HTMLDivElement>(null);
   const [showLeftArrow, setShowLeftArrow] = useState(false);
   const [showRightArrow, setShowRightArrow] = useState(true);
+  const [isDragging, setIsDragging] = useState(false);
+  const [startX, setStartX] = useState(0);
+  const [scrollLeft, setScrollLeft] = useState(0);
   
   // Check if arrows should be visible
   const checkOverflow = () => {
     if (sliderRef.current) {
       const { scrollLeft, scrollWidth, clientWidth } = sliderRef.current;
       setShowLeftArrow(scrollLeft > 0);
-      setShowRightArrow(scrollLeft < scrollWidth - clientWidth);
+      setShowRightArrow(scrollLeft < scrollWidth - clientWidth - 5);
     }
   };
 
@@ -52,6 +55,40 @@ export const NoteTypeSlider = ({ noteTypes, selectedType, onTypeChange }: NoteTy
     }
   };
 
+  // Mouse/Touch event handlers for drag scrolling
+  const handleMouseDown = (e: React.MouseEvent) => {
+    if (!sliderRef.current) return;
+    setIsDragging(true);
+    setStartX(e.pageX - sliderRef.current.offsetLeft);
+    setScrollLeft(sliderRef.current.scrollLeft);
+  };
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (!sliderRef.current) return;
+    setIsDragging(true);
+    setStartX(e.touches[0].pageX - sliderRef.current.offsetLeft);
+    setScrollLeft(sliderRef.current.scrollLeft);
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isDragging || !sliderRef.current) return;
+    e.preventDefault();
+    const x = e.pageX - sliderRef.current.offsetLeft;
+    const walk = (x - startX) * 1.5; // scroll speed multiplier
+    sliderRef.current.scrollLeft = scrollLeft - walk;
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!isDragging || !sliderRef.current) return;
+    const x = e.touches[0].pageX - sliderRef.current.offsetLeft;
+    const walk = (x - startX) * 1.5; // scroll speed multiplier
+    sliderRef.current.scrollLeft = scrollLeft - walk;
+  };
+
   return (
     <div className="relative flex items-center w-full py-1">
       {showLeftArrow && (
@@ -67,15 +104,23 @@ export const NoteTypeSlider = ({ noteTypes, selectedType, onTypeChange }: NoteTy
       
       <div 
         ref={sliderRef} 
-        className="flex overflow-x-auto scrollbar-hide space-x-2 px-2 py-1 w-full" 
+        className="flex overflow-x-auto scrollbar-hide space-x-2 px-2 py-1 w-full scroll-smooth" 
         onScroll={handleScroll}
+        onMouseDown={handleMouseDown}
+        onMouseUp={handleMouseUp}
+        onMouseLeave={handleMouseUp}
+        onMouseMove={handleMouseMove}
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleMouseUp}
+        onTouchMove={handleTouchMove}
+        style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
       >
         {noteTypes.map((type) => (
           <Button
             key={type.id}
             variant={selectedType.id === type.id ? "default" : "outline"}
             size="sm"
-            className="whitespace-nowrap min-w-fit"
+            className="whitespace-nowrap min-w-fit flex-shrink-0"
             style={{ 
               backgroundColor: selectedType.id === type.id ? type.color : 'transparent',
               color: selectedType.id === type.id ? '#fff' : type.color,

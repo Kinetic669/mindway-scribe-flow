@@ -138,7 +138,7 @@ export default function DemoSession() {
   const handleAssignExercise = (exerciseType: string) => {
     setActiveExercise(exerciseType);
     
-    // Create an exercise note
+    // Create an exercise note with proper type
     const exerciseNoteType = noteTypes.find(t => t.name === "Ćwiczenie") || {
       id: "exercise",
       name: "Ćwiczenie",

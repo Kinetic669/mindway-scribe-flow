@@ -11,7 +11,9 @@ import {
   Eye, 
   CheckSquare,
   Calendar,
-  Lightbulb
+  Lightbulb,
+  Circle,
+  Dumbbell
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -24,8 +26,7 @@ type TimelinePointProps = {
 
 export const TimelinePoint = ({ note, showMinutes, timeKey, onNoteClick }: TimelinePointProps) => {
   const isDrawing = note.content.startsWith("data:image") || note.type.name.toLowerCase().includes("rysunek");
-  const isExercise = note.type.name.toLowerCase().includes("ćwiczenie") || 
-                    note.type.name.toLowerCase().includes("zadanie");
+  const isExercise = note.type.name.toLowerCase().includes("ćwiczenie");
   const isPlanning = note.type.name.toLowerCase().includes("planowanie");
   const isReflection = note.type.name.toLowerCase().includes("refleksja");
   
@@ -41,8 +42,12 @@ export const TimelinePoint = ({ note, showMinutes, timeKey, onNoteClick }: Timel
     if (typeName.includes('wypowiedź')) return <MessageSquare className="h-3 w-3" />;
     if (typeName.includes('spostrzeżenie')) return <Lightbulb className="h-3 w-3" />;
     if (typeName.includes('obserwacja')) return <Eye className="h-3 w-3" />;
+    if (typeName.includes('zadanie')) return <CheckSquare className="h-3 w-3" />;
+    if (typeName.includes('pytanie')) return <Circle className="h-3 w-3" />;
+    if (typeName.includes('ćwiczenie fizyczne')) return <Dumbbell className="h-3 w-3" />;
+    if (typeName.includes('notatka')) return <FileText className="h-3 w-3" />;
     
-    return null;
+    return <MessageSquare className="h-3 w-3" />;
   };
 
   const isSpecialType = isDrawing || isExercise || isPlanning || isReflection;

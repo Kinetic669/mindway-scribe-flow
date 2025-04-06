@@ -51,8 +51,8 @@ export const SessionTimer = ({ sessionDuration, sessionStartTime }: SessionTimer
   const strokeDashoffset = circumference - (progress / 100) * circumference;
   
   return (
-    <div className="relative flex items-center justify-center w-18 h-18">
-      <svg className="w-18 h-18 transform -rotate-90" viewBox="0 0 60 60">
+    <div className="relative flex items-center justify-center w-24 h-24">
+      <svg className="w-24 h-24 transform -rotate-90" viewBox="0 0 60 60">
         <circle
           cx="30"
           cy="30"
@@ -74,7 +74,7 @@ export const SessionTimer = ({ sessionDuration, sessionStartTime }: SessionTimer
           strokeLinecap="round"
         />
       </svg>
-      <div className={`absolute inset-0 flex items-center justify-center text-md font-medium ${getTimerColor()}`}>
+      <div className={`absolute inset-0 flex items-center justify-center text-xl font-medium ${getTimerColor()}`}>
         {formatTime(timeLeft)}
       </div>
     </div>

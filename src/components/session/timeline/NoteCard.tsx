@@ -5,7 +5,7 @@ import { useState } from "react";
 import { Note } from "@/types";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Edit, Trash2, MoreVertical, Clock, Calendar, MessageSquare, Lightbulb, Eye, CheckSquare, Brain, Pencil } from "lucide-react";
+import { Edit, Trash2, MoreVertical, Clock, Calendar, MessageSquare, Lightbulb, Eye, CheckSquare, Brain, Pencil, Circle, Dumbbell, FileText } from "lucide-react";
 import { 
   DropdownMenu,
   DropdownMenuTrigger,
@@ -32,22 +32,32 @@ export const NoteCard = ({
 }: NoteCardProps) => {
   const [expanded, setExpanded] = useState(false);
 
-  const getIconForType = (typeName: string) => {
-    switch (typeName.toLowerCase()) {
-      case "wypowiedź klienta": return <MessageSquare size={16} />;
-      case "spostrzeżenie terapeuty": return <Lightbulb size={16} />;
-      case "obserwacja": return <Eye size={16} />;
-      case "zadanie": return <CheckSquare size={16} />;
-      case "refleksja": return <Brain size={16} />;
-      case "rysunek": return <Pencil size={16} />;
-      case "ćwiczenie": return <Brain size={16} />;
-      case "notatka z planowania": return <Calendar size={16} />;
-      default: return <MessageSquare size={16} />;
-    }
-  };
+  // Determine if this is a special type of note
+  const isDrawing = note.content.includes("data:image") || note.type.name.toLowerCase().includes("rysunek");
+  const isExercise = note.type.name.toLowerCase().includes("ćwiczenie");
+  const isPlanningNote = note.type.name.toLowerCase().includes("planowanie");
+  const isReflection = note.type.name.toLowerCase().includes("refleksja");
 
-  const isPlanningNote = (note: Note) => {
-    return note.type.name.toLowerCase().includes("planowanie");
+  const getIconForType = (typeName: string) => {
+    const lowerCaseName = typeName.toLowerCase();
+    
+    // Special types
+    if (isDrawing) return <Pencil size={16} />;
+    if (isExercise) return <Brain size={16} />;
+    if (isPlanningNote) return <Calendar size={16} />;
+    if (isReflection) return <Brain size={16} />;
+    
+    // Standard types
+    if (lowerCaseName.includes('wypowiedź')) return <MessageSquare size={16} />;
+    if (lowerCaseName.includes('spostrzeżenie')) return <Lightbulb size={16} />;
+    if (lowerCaseName.includes('obserwacja')) return <Eye size={16} />;
+    if (lowerCaseName.includes('zadanie')) return <CheckSquare size={16} />;
+    if (lowerCaseName.includes('pytanie')) return <Circle size={16} />;
+    if (lowerCaseName.includes('ćwiczenie fizyczne')) return <Dumbbell size={16} />;
+    if (lowerCaseName.includes('notatka')) return <FileText size={16} />;
+    
+    // Default
+    return <MessageSquare size={16} />;
   };
 
   const formatTime = (date: Date) => {
@@ -57,9 +67,18 @@ export const NoteCard = ({
   return (
     <div className="timeline-item" id={`note-${note.id}`}>
       <div 
-        className="timeline-dot" 
-        style={{ backgroundColor: note.type.color }}
-      />
+        className={`timeline-dot ${isDrawing || isExercise || isPlanningNote || isReflection ? 'border-2 bg-white flex items-center justify-center' : ''}`}
+        style={{ 
+          backgroundColor: isDrawing || isExercise || isPlanningNote || isReflection ? 'white' : note.type.color,
+          borderColor: note.type.color 
+        }}
+      >
+        {(isDrawing || isExercise || isPlanningNote || isReflection) && (
+          <span className="text-[10px]" style={{ color: note.type.color }}>
+            {getIconForType(note.type.name)}
+          </span>
+        )}
+      </div>
       
       <div className="ml-1">
         <div className="flex items-center justify-between text-sm text-gray-500 mb-1">
@@ -119,7 +138,7 @@ export const NoteCard = ({
           </DropdownMenu>
         </div>
         
-        {isPlanningNote(note) && (
+        {isPlanningNote && (
           <div className="text-xs text-amber-600 mb-1 flex items-center">
             <Calendar size={12} className="mr-1" />
             Notatka z planowania sesji
