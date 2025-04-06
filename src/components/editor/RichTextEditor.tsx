@@ -33,7 +33,7 @@ export function RichTextEditor({
     },
     editorProps: {
       attributes: {
-        class: "outline-none px-12 py-3 min-h-[100px]",
+        class: "outline-none px-4 pb-14 pt-3 min-h-[100px]",
       },
     }
   });
@@ -44,13 +44,14 @@ export function RichTextEditor({
 
   return (
     <div 
-      className={cn("relative rounded-md border", className)} 
+      className={cn("relative rounded-md border focus-within:outline focus-within:outline-2 focus-within:outline-offset-2", className)} 
       style={{ 
         borderColor: color ? `${color}40` : undefined,
-        boxShadow: color ? `0 0 0 1px ${color}20` : undefined
+        boxShadow: color ? `0 0 0 1px ${color}20` : undefined,
+        outlineColor: color ? `${color}40` : undefined
       }}
     >
-      <div className="flex items-center gap-2 p-2 pl-12 border-b toolbar">
+      <div className="flex items-center gap-2 p-2 pl-11 border-b toolbar">
         <Button
           type="button"
           variant="ghost"
