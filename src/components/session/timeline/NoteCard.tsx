@@ -176,9 +176,10 @@ export const NoteCard = ({
               />
             </div>
           ) : (
-            <div className={`note-card-content ${expanded ? '' : 'line-clamp-3'}`}>
-              {note.content}
-            </div>
+            <div 
+              className={`note-card-content prose prose-sm max-w-none ${expanded ? '' : 'line-clamp-3'}`}
+              dangerouslySetInnerHTML={{ __html: note.content }}
+            />
           )}
           
           {expanded && (
