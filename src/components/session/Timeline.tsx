@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Note } from "@/types";
 import { Card } from "@/components/ui/card";
@@ -161,119 +160,172 @@ export const Timeline = ({ notes, onDeleteNote, onChangeNoteType }: TimelineProp
         </div>
       ) : (
         <div className="space-y-4">
-          {filteredNotes.map((note) => (
-            <div key={note.id} className="timeline-item" id={`note-${note.id}`}>
+          {filteredNotes.map((note) => {
+            const shouldShowSpecialIcon = note.type.name === "wypowiedź klienta" || note.type.name === "spostrzeżenie terapeuty";
+            return (
               <div 
-                className="timeline-dot" 
-                style={{ backgroundColor: note.type.color }}
-              />
-              
-              <div className="ml-4">
-                <div className="flex items-center justify-between text-sm text-gray-500 mb-1">
-                  <div className="flex items-center gap-2">
-                    <span 
-                      className="px-2 py-0.5 rounded-full text-xs font-medium flex items-center gap-1" 
-                      style={{ 
-                        backgroundColor: `${note.type.color}20`, 
-                        color: note.type.color 
-                      }}
-                    >
+                key={note.id} 
+                className={`timeline-item ${shouldShowSpecialIcon ? 'has-icon' : ''}`} 
+                id={`note-${note.id}`}
+              >
+                {shouldShowSpecialIcon ? (
+                  <div 
+                    className="timeline-dot has-icon" 
+                    style={{ backgroundColor: 'transparent' }}
+                  >
+                    <span style={{ color: note.type.color }}>
                       {getIconForType(note.type.name)}
-                      {note.type.name}
-                    </span>
-                    <span className="flex items-center">
-                      <Clock size={12} className="mr-1" />
-                      {showTimeAsMinutes 
-                        ? `${getMinutesSinceStart(note.timestamp)} min` 
-                        : formatTime(note.timestamp)
-                      }
                     </span>
                   </div>
-
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon" className="h-6 w-6">
-                        <MoreVertical size={14} />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem onClick={() => toggleExpand(note.id)}>
-                        {expandedNote === note.id ? "Zwiń" : "Rozwiń"}
-                      </DropdownMenuItem>
-                      {onChangeNoteType && (
-                        <>
-                          <DropdownMenuSeparator />
-                          <DropdownMenuItem disabled className="text-xs text-muted-foreground">
-                            Zmień typ notatki:
-                          </DropdownMenuItem>
-                          {noteTypes.map(type => (
-                            <DropdownMenuItem 
-                              key={type.id} 
-                              onClick={() => onChangeNoteType(note.id, type.id)}
-                              className="flex items-center gap-2"
-                            >
-                              <div className="w-2 h-2 rounded-full" style={{ backgroundColor: type.color }}></div>
-                              {type.name}
-                            </DropdownMenuItem>
-                          ))}
-                        </>
-                      )}
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem onClick={() => onDeleteNote(note.id)} className="text-red-500">
-                        Usuń notatkę
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </div>
-                
-                {isPlanningNote(note) && (
-                  <div className="text-xs text-amber-600 mb-1 flex items-center">
-                    <Calendar size={12} className="mr-1" />
-                    Notatka z planowania sesji
-                  </div>
+                ) : (
+                  <div 
+                    className="timeline-dot"
+                    style={{ backgroundColor: note.type.color }}
+                  />
                 )}
                 
-                <Card 
-                  className={`note-card relative ${expandedNote === note.id ? 'border-mindway-primary' : ''}`}
-                  onClick={() => toggleExpand(note.id)}
-                >
-                  {note.content.includes("data:image") ? (
-                    <div className="note-card-content">
-                      <img 
-                        src={note.content} 
-                        alt="Odręczna notatka" 
-                        className="max-w-full rounded"
-                      />
+                <div className="ml-4">
+                  <div className="flex items-center justify-between text-sm text-gray-500 mb-1">
+                    <div className="flex items-center gap-2">
+                      <span 
+                        className="px-2 py-0.5 rounded-full text-xs font-medium flex items-center gap-1" 
+                        style={{ 
+                          backgroundColor: `${note.type.color}20`, 
+                          color: note.type.color 
+                        }}
+                      >
+                        {getIconForType(note.type.name)}
+                        {note.type.name}
+                      </span>
+                      <span className="flex items-center">
+                        <Clock size={12} className="mr-1" />
+                        {showTimeAsMinutes 
+                          ? `${getMinutesSinceStart(note.timestamp)} min` 
+                          : formatTime(note.timestamp)
+                        }
+                      </span>
                     </div>
-                  ) : (
-                    <div className={`note-card-content ${expandedNote === note.id ? '' : 'line-clamp-3'}`}>
-                      {note.content}
+
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="icon" className="h-6 w-6">
+                          <MoreVertical size={14} />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem onClick={() => toggleExpand(note.id)}>
+                          {expandedNote === note.id ? "Zwiń" : "Rozwiń"}
+                        </DropdownMenuItem>
+                        {onChangeNoteType && (
+                          <>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem disabled className="text-xs text-muted-foreground">
+                              Zmień typ notatki:
+                            </DropdownMenuItem>
+                            {noteTypes.map(type => (
+                              <DropdownMenuItem 
+                                key={type.id} 
+                                onClick={() => onChangeNoteType(note.id, type.id)}
+                                className="flex items-center gap-2"
+                              >
+                                <div className="w-2 h-2 rounded-full" style={{ backgroundColor: type.color }}></div>
+                                {type.name}
+                              </DropdownMenuItem>
+                            ))}
+                          </>
+                        )}
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem onClick={() => onDeleteNote(note.id)} className="text-red-500">
+                          Usuń notatkę
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
+                  
+                  {isPlanningNote(note) && (
+                    <div className="text-xs text-amber-600 mb-1 flex items-center">
+                      <Calendar size={12} className="mr-1" />
+                      Notatka z planowania sesji
                     </div>
                   )}
                   
-                  {expandedNote === note.id && (
-                    <div className="mt-4 pt-3 border-t flex justify-end gap-2">
-                      <Button variant="outline" size="sm">
-                        <Edit size={14} className="mr-1" /> Edytuj
-                      </Button>
-                      <Button 
-                        variant="outline" 
-                        size="sm"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onDeleteNote(note.id);
-                        }}
-                      >
-                        <Trash2 size={14} className="mr-1" /> Usuń
-                      </Button>
-                    </div>
-                  )}
-                </Card>
+                  <Card 
+                    className={`note-card relative ${expandedNote === note.id ? 'border-mindway-primary' : ''}`}
+                    onClick={() => toggleExpand(note.id)}
+                  >
+                    {note.content.includes("data:image") ? (
+                      <div className="note-card-content">
+                        <img 
+                          src={note.content} 
+                          alt="Odręczna notatka" 
+                          className="max-w-full rounded"
+                        />
+                      </div>
+                    ) : (
+                      <div className={`note-card-content ${expandedNote === note.id ? '' : 'line-clamp-3'}`}>
+                        {note.content}
+                      </div>
+                    )}
+                    
+                    {expandedNote === note.id && (
+                      <div className="mt-4 pt-3 border-t flex justify-end gap-2">
+                        <Button variant="outline" size="sm">
+                          <Edit size={14} className="mr-1" /> Edytuj
+                        </Button>
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onDeleteNote(note.id);
+                          }}
+                        >
+                          <Trash2 size={14} className="mr-1" /> Usuń
+                        </Button>
+                      </div>
+                    )}
+                  </Card>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>
   );
 };
+
+@layer components {
+  .mindway-container {
+    @apply w-full max-w-7xl mx-auto px-4 md:px-6;
+  }
+
+  .note-input {
+    @apply w-full p-3 rounded-lg border border-border focus:outline-none focus:ring-2 focus:ring-mindway-primary/30 transition-all;
+  }
+  
+  .timeline-item {
+    @apply relative pl-6 pr-4 pb-6 before:absolute before:left-0 before:top-0 before:h-full before:w-px before:bg-border;
+  }
+  
+  .timeline-item:before {
+    content: '';
+  }
+  
+  .timeline-dot {
+    @apply absolute left-0 top-2 w-3 h-3 rounded-full -translate-x-1/2 z-10;
+  }
+
+  .note-card {
+    @apply p-4 rounded-lg border border-border bg-white shadow-sm;
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}

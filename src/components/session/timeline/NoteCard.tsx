@@ -84,9 +84,9 @@ export const NoteCard = ({
   };
 
   return (
-    <div className="timeline-item" id={`note-${note.id}`}>
+    <div className={`timeline-item ${shouldShowSpecialIcon ? 'has-icon' : ''}`} id={`note-${note.id}`}>
       {shouldShowSpecialIcon ? (
-        <div className="timeline-dot flex items-center justify-center" style={{ backgroundColor: 'transparent' }}>
+        <div className="timeline-dot has-icon" style={{ backgroundColor: 'transparent' }}>
           <span style={{ color: note.type.color }}>
             {getIconForType(note.type.name)}
           </span>
