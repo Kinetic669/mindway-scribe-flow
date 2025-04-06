@@ -1,7 +1,8 @@
+
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { useRouter } from "next/navigation";
+import { useNavigate } from "react-router-dom"; // Changed from next/navigation to react-router-dom
 import { v4 as uuidv4 } from "uuid";
 import { Note, NoteType } from "@/types";
 import { mockNotes, noteTypes } from "@/data/mockData";
@@ -40,7 +41,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 export default function DemoSession() {
-  const router = useRouter();
+  const navigate = useNavigate(); // Changed from router to navigate
   const [notes, setNotes] = useState<Note[]>(mockNotes);
   const [isDrawingMode, setIsDrawingMode] = useState(false);
   const [sessionStartTime] = useState(new Date());
@@ -263,7 +264,7 @@ export default function DemoSession() {
   const confirmEndSession = () => {
     // In a real app, save session data, etc.
     toast("Sesja została zakończona");
-    router.push('/'); // Navigate to home page or summary page
+    navigate('/'); // Changed from router.push to navigate
   };
 
   return (

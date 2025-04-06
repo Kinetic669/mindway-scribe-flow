@@ -1,8 +1,7 @@
-
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "next/navigation"; // Keep next/navigation here since this is a Next.js file
 import { v4 as uuidv4 } from "uuid";
 import { Note, NoteType } from "@/types";
 import { mockNotes, noteTypes } from "@/data/mockData";
