@@ -12,17 +12,7 @@ type RichTextEditorProps = {
   onKeyDown?: (e: React.KeyboardEvent) => void;
   placeholder?: string;
   className?: string;
-  variant?: 'client-quote' | 'therapist-insight' | 'observation' | 'action-item' | 'reflection' | 'question' | 'progress-note';
-};
-
-const colors = {
-  'client-quote': 'rgb(59, 130, 246)',
-  'therapist-insight': 'rgb(16, 185, 129)',
-  'observation': 'rgb(99, 102, 241)',
-  'action-item': 'rgb(239, 68, 68)',
-  'reflection': 'rgb(245, 158, 11)',
-  'question': 'rgb(139, 92, 246)',
-  'progress-note': 'rgb(6, 182, 212)'
+  color?: string;
 };
 
 export function RichTextEditor({
@@ -31,7 +21,7 @@ export function RichTextEditor({
   onKeyDown,
   placeholder = "Start typing...",
   className = "",
-  variant = "therapist-insight"
+  color
 }: RichTextEditorProps) {
   const editor = useEditor({
     extensions: [
@@ -52,14 +42,12 @@ export function RichTextEditor({
     return null;
   }
 
-  const color = colors[variant];
-
   return (
     <div 
       className={cn("relative rounded-md border", className)} 
       style={{ 
-        borderColor: color.replace('rgb', 'rgba').replace(')', ', 0.4)'),
-        boxShadow: `0 0 0 1px ${color.replace('rgb', 'rgba').replace(')', ', 0.2)')}`
+        borderColor: color ? `${color}40` : undefined,
+        boxShadow: color ? `0 0 0 1px ${color}20` : undefined
       }}
     >
       <div className="flex items-center gap-2 p-2 pl-12 border-b toolbar">

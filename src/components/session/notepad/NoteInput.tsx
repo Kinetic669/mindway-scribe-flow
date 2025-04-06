@@ -53,11 +53,7 @@ export const NoteInput = ({
         onChange={onContentChange}
         onKeyDown={handleKeyDown}
         placeholder={`Wpisz swoje ${selectedType.name.toLowerCase()} tutaj...`}
-        style={{ 
-          borderColor: `${selectedType.color}40`,
-          outlineColor: selectedType.color, 
-          boxShadow: `0 0 0 1px ${selectedType.color}20`,
-        }}
+        color={selectedType.color}
       />
       <Button 
         className="absolute right-3 bottom-3 z-10"
