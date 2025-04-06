@@ -5,7 +5,27 @@ import { useState } from "react";
 import { Note } from "@/types";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Edit, Trash2, MoreVertical, Clock, Calendar, MessageSquare, Lightbulb, Eye, CheckSquare, Brain, Pencil, Circle, Dumbbell, FileText } from "lucide-react";
+import { 
+  Edit, 
+  Trash2, 
+  MoreVertical, 
+  Clock, 
+  Calendar, 
+  MessageSquare, 
+  Lightbulb, 
+  Eye, 
+  CheckSquare, 
+  Brain, 
+  Pencil, 
+  Circle, 
+  Dumbbell, 
+  FileText,
+  Book,
+  Heart,
+  Activity,
+  AlertTriangle,
+  Bookmark
+} from "lucide-react";
 import { 
   DropdownMenu,
   DropdownMenuTrigger,
@@ -34,7 +54,7 @@ export const NoteCard = ({
 
   // Determine if this is a special type of note
   const isDrawing = note.content.includes("data:image") || note.type.name.toLowerCase().includes("rysunek");
-  const isExercise = note.type.name.toLowerCase().includes("ćwiczenie");
+  const isExercise = note.type.name.toLowerCase().includes("ćwiczenie") || note.content.toLowerCase().includes("rozpoczęto ćwiczenie");
   const isPlanningNote = note.type.name.toLowerCase().includes("planowanie");
   const isReflection = note.type.name.toLowerCase().includes("refleksja");
 
@@ -55,6 +75,11 @@ export const NoteCard = ({
     if (lowerCaseName.includes('pytanie')) return <Circle size={16} />;
     if (lowerCaseName.includes('ćwiczenie fizyczne')) return <Dumbbell size={16} />;
     if (lowerCaseName.includes('notatka')) return <FileText size={16} />;
+    if (lowerCaseName.includes('cel')) return <Bookmark size={16} />;
+    if (lowerCaseName.includes('zagrożenie')) return <AlertTriangle size={16} />;
+    if (lowerCaseName.includes('postęp')) return <Activity size={16} />;
+    if (lowerCaseName.includes('zasoby')) return <Book size={16} />;
+    if (lowerCaseName.includes('wzmocnienie')) return <Heart size={16} />;
     
     // Default
     return <MessageSquare size={16} />;
@@ -67,17 +92,16 @@ export const NoteCard = ({
   return (
     <div className="timeline-item" id={`note-${note.id}`}>
       <div 
-        className={`timeline-dot ${isDrawing || isExercise || isPlanningNote || isReflection ? 'border-2 bg-white flex items-center justify-center' : ''}`}
+        className={`timeline-dot flex items-center justify-center`}
         style={{ 
-          backgroundColor: isDrawing || isExercise || isPlanningNote || isReflection ? 'white' : note.type.color,
-          borderColor: note.type.color 
+          backgroundColor: 'white',
+          borderColor: note.type.color,
+          border: '2px solid'
         }}
       >
-        {(isDrawing || isExercise || isPlanningNote || isReflection) && (
-          <span className="text-[10px]" style={{ color: note.type.color }}>
-            {getIconForType(note.type.name)}
-          </span>
-        )}
+        <span style={{ color: note.type.color }}>
+          {getIconForType(note.type.name)}
+        </span>
       </div>
       
       <div className="ml-1">

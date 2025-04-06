@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Note } from "@/types";
 import { Button } from "@/components/ui/button";
@@ -53,6 +52,22 @@ export const MinimalTimeline = ({
   const groupedNotes: Record<string, Note[]> = {};
   
   notes.forEach(note => {
+    // Skip duplicate exercise notes - only keep summary results
+    if (note.content.includes("Rozpoczęto ćwiczenie:")) {
+      // Check if there's already a result note for this exercise
+      const exerciseType = note.content.split(": ")[1];
+      const hasResultNote = notes.some(n => 
+        n.id !== note.id && 
+        (n.content.includes(`wykonał ćwiczenie`) || 
+         n.content.includes(`zidentyfikował emocję`) ||
+         n.content.includes(`Refleksja klienta`)) &&
+        n.timestamp > note.timestamp
+      );
+      
+      // If there's a result, skip this "started exercise" note
+      if (hasResultNote) return;
+    }
+
     let key;
     if (showMinutes) {
       const minutes = getMinutesSinceStart(note.timestamp);
@@ -96,12 +111,13 @@ export const MinimalTimeline = ({
         onTimeFormatChange={handleFormatToggle}
       />
       
-      <div className="overflow-x-auto">
-        <div className="flex items-center overflow-x-auto py-3 px-1 no-scrollbar">
+      <div className="overflow-x-auto w-full">
+        <div className="flex items-start flex-nowrap overflow-x-auto py-3 px-1 min-w-full" 
+             style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
           {sortedTimes.map(time => (
-            <div key={time} className="flex flex-col items-center min-w-6 mx-0.5">
-              {/* Time label */}
-              <div className="flex flex-col items-center space-y-1.5">
+            <div key={time} className="flex flex-col items-center min-w-[50px] mx-1 flex-shrink-0">
+              <div className="text-xs text-gray-500 mb-1">{time}</div>
+              <div className="flex flex-col items-center gap-1.5">
                 {groupedNotes[time].map(note => (
                   <TimelinePoint 
                     key={note.id}

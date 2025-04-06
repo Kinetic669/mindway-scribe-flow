@@ -13,7 +13,12 @@ import {
   Calendar,
   Lightbulb,
   Circle,
-  Dumbbell
+  Dumbbell,
+  Book,
+  Heart,
+  Activity,
+  AlertTriangle,
+  Bookmark
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -25,8 +30,9 @@ type TimelinePointProps = {
 };
 
 export const TimelinePoint = ({ note, showMinutes, timeKey, onNoteClick }: TimelinePointProps) => {
+  // Special note type detection
   const isDrawing = note.content.startsWith("data:image") || note.type.name.toLowerCase().includes("rysunek");
-  const isExercise = note.type.name.toLowerCase().includes("ćwiczenie");
+  const isExercise = note.type.name.toLowerCase().includes("ćwiczenie") || note.content.toLowerCase().includes("rozpoczęto ćwiczenie");
   const isPlanning = note.type.name.toLowerCase().includes("planowanie");
   const isReflection = note.type.name.toLowerCase().includes("refleksja");
   
@@ -46,11 +52,22 @@ export const TimelinePoint = ({ note, showMinutes, timeKey, onNoteClick }: Timel
     if (typeName.includes('pytanie')) return <Circle className="h-3 w-3" />;
     if (typeName.includes('ćwiczenie fizyczne')) return <Dumbbell className="h-3 w-3" />;
     if (typeName.includes('notatka')) return <FileText className="h-3 w-3" />;
+    if (typeName.includes('cel')) return <Bookmark className="h-3 w-3" />;
+    if (typeName.includes('zagrożenie')) return <AlertTriangle className="h-3 w-3" />;
+    if (typeName.includes('postęp')) return <Activity className="h-3 w-3" />;
+    if (typeName.includes('zasoby')) return <Book className="h-3 w-3" />;
+    if (typeName.includes('wzmocnienie')) return <Heart className="h-3 w-3" />;
     
     return <MessageSquare className="h-3 w-3" />;
   };
 
-  const isSpecialType = isDrawing || isExercise || isPlanning || isReflection;
+  // Every special type should be displayed with an icon
+  const shouldShowIcon = isDrawing || isExercise || isPlanning || isReflection || 
+                         note.type.name.toLowerCase().includes('cel') ||
+                         note.type.name.toLowerCase().includes('zagrożenie') ||
+                         note.type.name.toLowerCase().includes('postęp') ||
+                         note.type.name.toLowerCase().includes('zasoby') ||
+                         note.type.name.toLowerCase().includes('wzmocnienie');
 
   return (
     <TooltipProvider>
@@ -58,17 +75,17 @@ export const TimelinePoint = ({ note, showMinutes, timeKey, onNoteClick }: Timel
         <TooltipTrigger asChild>
           <div 
             style={{ 
-              backgroundColor: isSpecialType ? 'transparent' : note.type.color,
+              backgroundColor: shouldShowIcon ? 'transparent' : note.type.color,
               borderColor: note.type.color,
             }}
             className={cn(
               "w-5 h-5 rounded-full flex-shrink-0 transform transition-transform duration-200 hover:scale-125 flex items-center justify-center",
-              isSpecialType ? "border-2" : "",
+              shouldShowIcon ? "border-2" : "",
               "cursor-pointer"
             )}
             onClick={() => onNoteClick(note.id)}
           >
-            {isSpecialType && (
+            {shouldShowIcon && (
               <div className="text-[10px] text-center" style={{ color: note.type.color }}>
                 {getIcon()}
               </div>

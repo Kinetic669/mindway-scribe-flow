@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect, useRef } from "react";
@@ -116,6 +115,16 @@ export default function DemoSession() {
     }
   }, [sessionNotes, sessionStartTime]);
 
+  // Get exercise note type
+  const getExerciseNoteType = () => {
+    return noteTypes.find(t => t.name === "Ćwiczenie") || {
+      id: "exercise",
+      name: "Ćwiczenie",
+      color: "#8e44ad", // Purple color for exercises
+      visible: true
+    };
+  };
+
   const addNote = (content: string, type: NoteType) => {
     const newNote: Note = {
       id: uuidv4(),
@@ -138,25 +147,8 @@ export default function DemoSession() {
   const handleAssignExercise = (exerciseType: string) => {
     setActiveExercise(exerciseType);
     
-    // Create an exercise note with proper type
-    const exerciseNoteType = noteTypes.find(t => t.name === "Ćwiczenie") || {
-      id: "exercise",
-      name: "Ćwiczenie",
-      color: "#8e44ad", // Purple color for exercises
-      visible: true
-    };
-    
-    const exerciseNote: Note = {
-      id: uuidv4(),
-      content: `Rozpoczęto ćwiczenie: ${exerciseType}`,
-      type: exerciseNoteType,
-      timestamp: new Date(),
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    };
-    
-    setNotes(prev => [exerciseNote, ...prev]);
-    toast(`Ćwiczenie wybrane: ${exerciseType}`);
+    // We don't need to create the "started exercise" note anymore
+    // Just remember which exercise is active
   };
 
   const handleDrawingSave = (imageData: string) => {
@@ -186,10 +178,12 @@ export default function DemoSession() {
   };
 
   const handleEmotionWheelSave = (data: { emotion: string; intensity: number; notes: string }) => {
+    const exerciseType = getExerciseNoteType();
+    
     const emotionNote: Note = {
       id: uuidv4(),
       content: `Klient zidentyfikował emocję: ${data.emotion} (${data.intensity}/10)\n\nNotatki: ${data.notes}`,
-      type: noteTypes.find(t => t.name === "Wypowiedź klienta") || noteTypes[0],
+      type: exerciseType,
       timestamp: new Date(),
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -207,10 +201,12 @@ export default function DemoSession() {
       return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
     };
 
+    const exerciseType = getExerciseNoteType();
+
     const breathingNote: Note = {
       id: uuidv4(),
       content: `Klient wykonał ćwiczenie oddechowe.\nCzas trwania: ${formatTime(data.duration)}\nStatus: ${data.completed ? 'Ukończone' : 'Częściowe'}`,
-      type: noteTypes.find(t => t.name === "Obserwacja") || noteTypes[0],
+      type: exerciseType,
       timestamp: new Date(),
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -226,10 +222,12 @@ export default function DemoSession() {
     
     const formattedContent = `Refleksja klienta:\n\nSytuacja: ${responses.situation}\n\nMyśli: ${responses.thoughts}\n\nEmocje: ${responses.emotions}\n\nZachowanie: ${responses.behavior}\n\nAlternatywna perspektywa: ${responses.alternative}`;
     
+    const exerciseType = getExerciseNoteType();
+
     const reflectionNote: Note = {
       id: uuidv4(),
       content: formattedContent,
-      type: noteTypes.find(t => t.name === "Refleksja") || noteTypes[0],
+      type: exerciseType,
       timestamp: new Date(),
       createdAt: new Date(),
       updatedAt: new Date(),
