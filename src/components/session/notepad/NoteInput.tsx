@@ -1,11 +1,9 @@
-
 "use client";
 
-import { useRef, useEffect } from "react";
-import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Send } from "lucide-react";
 import { NoteType } from "@/types";
+import { RichTextEditor } from "@/components/editor/RichTextEditor";
 
 type NoteInputProps = {
   noteContent: string;
@@ -22,26 +20,27 @@ export const NoteInput = ({
   onSubmit, 
   onKeyDown 
 }: NoteInputProps) => {
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
-
-  useEffect(() => {
-    // Focus textarea on component mount
-    if (textareaRef.current) {
-      textareaRef.current.focus();
+  const handleSubmit = () => {
+    if (noteContent.trim() !== "") {
+      onSubmit();
+      // Reset the content after submission
+      onContentChange("");
     }
-  }, []);
+  };
 
-  // Focus textarea when note type changes
-  useEffect(() => {
-    if (textareaRef.current) {
-      textareaRef.current.focus();
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) {
+      e.preventDefault();
+      handleSubmit();
+      return;
     }
-  }, [selectedType]);
+    onKeyDown(e);
+  };
 
   return (
     <div className="relative">
       <div 
-        className="absolute left-3 top-3 p-1 rounded-md"
+        className="absolute left-3 top-[18px] p-1 rounded-md z-10"
         style={{ backgroundColor: `${selectedType.color}20` }}
       >
         <div 
@@ -49,23 +48,17 @@ export const NoteInput = ({
           style={{ backgroundColor: selectedType.color }}
         />
       </div>
-      <Textarea 
-        ref={textareaRef}
+      <RichTextEditor
+        content={noteContent}
+        onChange={onContentChange}
+        onKeyDown={handleKeyDown}
         placeholder={`Wpisz swoje ${selectedType.name.toLowerCase()} tutaj...`}
-        className="min-h-[100px] resize-none pl-10 pr-16 py-3 focus-visible:ring-2"
-        style={{ 
-          borderColor: `${selectedType.color}40`,
-          outlineColor: selectedType.color, 
-          boxShadow: `0 0 0 1px ${selectedType.color}20`,
-        }}
-        value={noteContent}
-        onChange={(e) => onContentChange(e.target.value)}
-        onKeyDown={onKeyDown}
+        color={selectedType.color}
       />
       <Button 
-        className="absolute right-3 bottom-3"
+        className="absolute right-3 bottom-3 z-10"
         size="sm"
-        onClick={onSubmit}
+        onClick={handleSubmit}
         disabled={noteContent.trim() === ""}
         style={{ 
           backgroundColor: selectedType.color,

@@ -1,75 +1,60 @@
-
 import { Client, Note, NoteType, Session, Tool, SessionAttendance } from "../types";
 
 export const noteTypes: NoteType[] = [
   {
     id: "1",
-    name: "Client Quote",
+    name: "Cytat Klienta",
     color: "#4c6fff",
     icon: "quote",
     visible: true,
   },
   {
     id: "2",
-    name: "Therapist Insight",
+    name: "Spostrzeżenie Terapeuty",
     color: "#10b981",
     icon: "lightbulb",
     visible: true,
   },
   {
     id: "3",
-    name: "Observation",
+    name: "Obserwacja",
     color: "#6366f1",
     icon: "eye",
     visible: true,
   },
   {
     id: "4",
-    name: "Action Item",
+    name: "Zadanie do Wykonania",
     color: "#f43f5e",
     icon: "check-square",
     visible: true,
   },
   {
     id: "5",
-    name: "Reflection",
+    name: "Refleksja",
     color: "#fbbf24",
     icon: "brain",
     visible: true,
   },
   {
     id: "6",
-    name: "Question",
+    name: "Pytanie",
     color: "#8b5cf6",
     icon: "help-circle",
     visible: true,
   },
   {
     id: "7",
-    name: "Progress Note",
+    name: "Notatka z Postępu",
     color: "#06b6d4",
     icon: "activity",
     visible: true,
   },
   {
     id: "8",
-    name: "Resource",
+    name: "Materiały",
     color: "#14b8a6",
     icon: "book",
-    visible: true,
-  },
-  {
-    id: "9",
-    name: "Drawing",
-    color: "#3498db",
-    icon: "pencil",
-    visible: true,
-  },
-  {
-    id: "pre-session",
-    name: "Pre-session Note",
-    color: "#333333", // Dark gray as requested
-    icon: "calendar",
     visible: true,
   },
 ];
@@ -77,7 +62,7 @@ export const noteTypes: NoteType[] = [
 export const mockNotes: Note[] = [
   {
     id: "1",
-    content: "I've been feeling overwhelmed with work lately, can't seem to focus on anything else.",
+    content: "Ostatnio czuję się przytłoczony pracą, nie mogę się skupić na niczym innym.",
     type: noteTypes[0],
     timestamp: new Date(Date.now() - 1000 * 60 * 20),
     createdAt: new Date(Date.now() - 1000 * 60 * 20),
@@ -85,7 +70,7 @@ export const mockNotes: Note[] = [
   },
   {
     id: "2",
-    content: "Client shows signs of work-related anxiety. Explore coping mechanisms in next session.",
+    content: "Klient wykazuje oznaki lęku związanego z pracą. Na następnej sesji omówić mechanizmy radzenia sobie.",
     type: noteTypes[1],
     timestamp: new Date(Date.now() - 1000 * 60 * 17),
     createdAt: new Date(Date.now() - 1000 * 60 * 17),
@@ -93,7 +78,7 @@ export const mockNotes: Note[] = [
   },
   {
     id: "3",
-    content: "Client's posture became more tense when discussing work deadlines.",
+    content: "Postawa klienta stała się bardziej napięta podczas rozmowy o terminach w pracy.",
     type: noteTypes[2],
     timestamp: new Date(Date.now() - 1000 * 60 * 15),
     createdAt: new Date(Date.now() - 1000 * 60 * 15),
@@ -101,7 +86,7 @@ export const mockNotes: Note[] = [
   },
   {
     id: "4",
-    content: "Practice 5-minute mindfulness exercise 3x daily",
+    content: "Praktykować 5-minutowe ćwiczenia uważności 3 razy dziennie",
     type: noteTypes[3],
     timestamp: new Date(Date.now() - 1000 * 60 * 10),
     createdAt: new Date(Date.now() - 1000 * 60 * 10),
@@ -109,7 +94,7 @@ export const mockNotes: Note[] = [
   },
   {
     id: "5",
-    content: "I think my anxiety about work reflects deeper concerns about proving my worth.",
+    content: "Myślę, że mój lęk związany z pracą odzwierciedla głębsze obawy o udowodnienie swojej wartości.",
     type: noteTypes[4],
     timestamp: new Date(Date.now() - 1000 * 60 * 5),
     createdAt: new Date(Date.now() - 1000 * 60 * 5),
@@ -120,54 +105,54 @@ export const mockNotes: Note[] = [
 export const mockTools: Tool[] = [
   {
     id: "1",
-    name: "Emotion Wheel",
-    description: "Help clients identify and articulate their emotions with precision",
-    category: "Emotional Awareness",
+    name: "Koło Emocji",
+    description: "Pomoc klientom w identyfikacji i wyrażaniu ich emocji z precyzją",
+    category: "Świadomość Emocjonalna",
     icon: "heart",
   },
   {
     id: "2",
-    name: "Breathing Exercise",
-    description: "4-7-8 breath technique for anxiety relief",
-    category: "Mindfulness",
+    name: "Ćwiczenie Oddechowe",
+    description: "Technika oddechu 4-7-8 na złagodzenie lęku",
+    category: "Uważność",
     icon: "wind",
   },
   {
     id: "3",
-    name: "Thought Record",
-    description: "Document and challenge negative automatic thoughts",
+    name: "Zapis Myśli",
+    description: "Dokumentowanie i kwestionowanie negatywnych automatycznych myśli",
     category: "CBT",
     icon: "file-text",
   },
   {
     id: "4",
-    name: "Values Exploration",
-    description: "Identify core values to guide meaningful action",
+    name: "Eksploracja Wartości",
+    description: "Identyfikacja podstawowych wartości kierujących znaczącym działaniem",
     category: "ACT",
     icon: "compass",
   },
   {
     id: "5",
-    name: "Grounding Exercise",
-    description: "5-4-3-2-1 sensory awareness technique for anxiety relief",
-    category: "Mindfulness",
+    name: "Ćwiczenie Uziemiające",
+    description: "Technika świadomości zmysłowej 5-4-3-2-1 na złagodzenie lęku",
+    category: "Uważność",
     icon: "anchor",
   },
 ];
 
-// Generate attendance history for the past year
+// Generowanie historii obecności za ostatni rok
 const generateAttendanceHistory = (): SessionAttendance[] => {
   const history: SessionAttendance[] = [];
   const today = new Date();
   const startDate = new Date(today);
   startDate.setFullYear(today.getFullYear() - 1);
   
-  // Weekly sessions for a year
+  // Sesje tygodniowe przez rok
   for (let i = 0; i < 52; i++) {
     const sessionDate = new Date(startDate);
     sessionDate.setDate(sessionDate.getDate() + (i * 7));
     
-    // 80% attendance rate
+    // 80% frekwencja
     const attended = Math.random() > 0.2;
     
     history.push({
@@ -182,30 +167,30 @@ const generateAttendanceHistory = (): SessionAttendance[] => {
 export const mockClients: Client[] = [
   {
     id: "1",
-    name: "Alex Johnson",
+    name: "Adam Kowalski",
     startDate: new Date(new Date().setFullYear(new Date().getFullYear() - 1)),
     attendanceHistory: generateAttendanceHistory(),
     sessions: [],
-    issues: ["Anxiety", "Work stress", "Relationship difficulties"],
-    backgroundInfo: "Alex has been struggling with work-related anxiety for the past year. Recently promoted to a management position, they're finding it difficult to balance new responsibilities with personal life."
+    issues: ["Lęk", "Stres w pracy", "Trudności w związku"],
+    backgroundInfo: "Adam zmaga się z lękiem związanym z pracą od roku. Niedawno awansował na stanowisko kierownicze i ma trudności z równoważeniem nowych obowiązków z życiem osobistym."
   },
   {
     id: "2",
-    name: "Taylor Smith",
+    name: "Teresa Nowak",
     startDate: new Date(new Date().setMonth(new Date().getMonth() - 6)),
     attendanceHistory: generateAttendanceHistory().slice(26),
     sessions: [],
-    issues: ["Depression", "Self-esteem", "Grief"],
-    backgroundInfo: "Taylor started therapy after losing a parent six months ago. They've been experiencing persistent low mood, sleep disturbances, and lack of motivation."
+    issues: ["Depresja", "Samoocena", "Żałoba"],
+    backgroundInfo: "Teresa rozpoczęła terapię po stracie rodzica sześć miesięcy temu. Doświadcza uporczywego obniżenia nastroju, zaburzeń snu i braku motywacji."
   },
   {
     id: "3",
-    name: "Jordan Davis",
+    name: "Jakub Wiśniewski",
     startDate: new Date(new Date().setMonth(new Date().getMonth() - 3)),
     attendanceHistory: generateAttendanceHistory().slice(39),
     sessions: [],
-    issues: ["ADHD", "Organization", "Academic performance"],
-    backgroundInfo: "Jordan is a college student recently diagnosed with ADHD. They're seeking strategies to improve focus, organization, and academic performance."
+    issues: ["ADHD", "Organizacja", "Wyniki w nauce"],
+    backgroundInfo: "Jakub jest studentem, u którego niedawno zdiagnozowano ADHD. Szuka strategii poprawy koncentracji, organizacji i wyników w nauce."
   },
 ];
 
@@ -213,13 +198,13 @@ export const mockSessions: Session[] = [
   {
     id: "1",
     clientId: "1",
-    title: "Weekly Session",
+    title: "Sesja Tygodniowa",
     date: new Date(),
     notes: mockNotes,
     status: "in-progress",
-    goals: ["Address work anxiety", "Practice mindfulness", "Explore coping strategies"]
+    goals: ["Radzenie sobie z lękiem w pracy", "Praktyka uważności", "Poznanie strategii radzenia sobie"]
   },
 ];
 
-// Add sessions to clients
-mockClients[0].sessions = [mockSessions[0]];
+// Dodanie sesji do klientów
+mockClients[0].sessions = [mockSessions[0]]; 
