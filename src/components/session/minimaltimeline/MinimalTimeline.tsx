@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from "react";
@@ -113,7 +114,7 @@ export const MinimalTimeline = ({
     <div className="w-full mb-2">
       <MiniTimelineHeader 
         onToggleVisibility={onToggleVisibility} 
-        showingMinutes={showMinutes}
+        showTimeFormat={showMinutes}
         onTimeFormatChange={handleFormatToggle}
       />
       
